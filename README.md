@@ -56,8 +56,10 @@ readingTime: "5 min read"
 ### Case Studies
 Add new `.mdx` files to `content/case-studies/`.
 
-### Locations
+### Locations (North Mississippi)
 Edit `data/cities.json` to add or remove cities. The `/locations/[city]` pages will be generated automatically.
+Currently targeting: Southaven, Olive Branch, Tupelo, Oxford, etc.
+Access the hub at `/locations`.
 
 ## Branding
 

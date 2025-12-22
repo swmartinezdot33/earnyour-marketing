@@ -2,8 +2,12 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import path from "path";
 import fs from "fs";
+import Link from "next/link";
 import { ServiceTemplate } from "@/components/services/ServiceTemplate";
-import { MapPin, Search, BarChart3, Star } from "lucide-react";
+import { MapPin, Search, BarChart3, Star, ArrowRight } from "lucide-react";
+import { Section } from "@/components/layout/Section";
+import { Container } from "@/components/layout/Container";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 
 // Read cities data
 const citiesPath = path.join(process.cwd(), "data", "cities.json");
@@ -14,6 +18,7 @@ interface City {
   name: string;
   state: string;
   description: string;
+  keywords?: string[];
 }
 
 export async function generateStaticParams() {
@@ -31,8 +36,9 @@ export async function generateMetadata({ params }: { params: Promise<{ city: str
   }
 
   return {
-    title: `Local SEO & Marketing Agency in ${city.name}, ${city.state} | EarnYour`,
-    description: `Top rated digital marketing agency serving ${city.name}, ${city.state}. We help local businesses rank higher on Google Maps and drive more revenue.`,
+    title: `Digital Marketing Agency in ${city.name}, ${city.state} | EarnYour`,
+    description: `Top rated SEO and digital marketing agency serving ${city.name}, ${city.state}. We help North Mississippi businesses rank #1 on Google and grow revenue.`,
+    keywords: [`${city.name} marketing agency`, `SEO ${city.name}`, `advertising ${city.name}`, ...city.keywords || []],
   };
 }
 
@@ -44,70 +50,102 @@ export default async function CityPage({ params }: { params: Promise<{ city: str
     notFound();
   }
 
+  // Get other cities for internal linking
+  const otherCities = cities.filter((c: City) => c.slug !== city.slug).slice(0, 3);
+
   return (
-    <ServiceTemplate
-      title={`Marketing Agency in ${city.name}, ${city.state}`}
-      subtitle={`The performance-first growth partner for businesses in ${city.name}.`}
-      description={`If you are running a business in ${city.name}, you know the competition is fierce. To stand out, you need more than just a website—you need a growth engine. We specialize in helping ${city.name} businesses dominate their local market through SEO, Google Ads, and custom automation.`}
-      features={[
-        `${city.name} Local SEO Strategy`,
-        "Google Maps Optimization",
-        "Localized Content Marketing",
-        "Review Management",
-        "Lead Generation Ads",
-        "Competitor Analysis",
-      ]}
-      benefits={[
-        {
-          title: "Dominate Your Market",
-          description: `Be the first choice for customers in ${city.name} searching for your services.`,
-          icon: Search,
-        },
-        {
-          title: "Get Found on Maps",
-          description: `Rank in the top 3 map results for keywords like "near me" in ${city.name}.`,
-          icon: MapPin,
-        },
-        {
-          title: "Drive Real Revenue",
-          description: "We focus on phone calls and booked appointments, not vanity metrics.",
-          icon: BarChart3,
-        },
-        {
-          title: "Local Authority",
-          description: `Establish your brand as the go-to expert in the ${city.name} area.`,
-          icon: Star,
-        },
-      ]}
-      process={[
-        {
-          title: "Local Audit",
-          description: `We analyze your current visibility in ${city.name} and identify gaps.`,
-        },
-        {
-          title: "Implementation",
-          description: "We optimize your GMB and website for local search intent.",
-        },
-        {
-          title: "Growth & Reporting",
-          description: "We track your rankings and leads, providing transparent monthly reports.",
-        },
-      ]}
-      faqs={[
-        {
-          question: `Do you work with businesses in ${city.name}?`,
-          answer: `Yes! We specialize in helping local service businesses in ${city.name} and surrounding areas.`,
-        },
-        {
-          question: "How do I rank higher on Google Maps?",
-          answer: "It requires a combination of an optimized profile, consistent citations, reviews, and local content. We handle all of this for you.",
-        },
-        {
-          question: "Can I meet with you?",
-          answer: "We are a digital-first agency, but we are happy to schedule a video call to discuss your goals.",
-        },
-      ]}
-    />
+    <>
+      <ServiceTemplate
+        title={`Digital Marketing in ${city.name}, ${city.state}`}
+        subtitle={`The premier growth partner for businesses in ${city.name} and the surrounding North Mississippi area.`}
+        description={`If you're running a business in ${city.name}, you know that word-of-mouth isn't enough anymore. To dominate the ${city.name} market, you need a digital engine that captures customers exactly when they're searching. We specialize in helping ${city.name} companies—from contractors to clinics—scale their revenue through hyper-local SEO and high-intent advertising.`}
+        features={[
+          `${city.name} Local SEO Dominance`,
+          "Google Maps Optimization",
+          "Targeted Lead Gen Ads",
+          "Review & Reputation Management",
+          "Custom Website Design",
+          "Competitor Analysis",
+        ]}
+        benefits={[
+          {
+            title: "Own Your Backyard",
+            description: `Be the undeniable market leader in ${city.name} when customers search for your services.`,
+            icon: MapPin,
+          },
+          {
+            title: "Get Found First",
+            description: `Rank in the coveted top 3 Google Map results for "${city.name}" keywords.`,
+            icon: Search,
+          },
+          {
+            title: "Real ROI",
+            description: "We focus on phone calls, form fills, and revenue. No vanity metrics.",
+            icon: BarChart3,
+          },
+          {
+            title: "Local Trust",
+            description: `Build a 5-star reputation that makes you the easy choice in ${city.name}.`,
+            icon: Star,
+          },
+        ]}
+        process={[
+          {
+            title: "Local Market Audit",
+            description: `We analyze the ${city.name} competitive landscape to find your biggest opportunities.`,
+          },
+          {
+            title: "Strategic Implementation",
+            description: "We build your local authority with optimized profiles, citations, and content.",
+          },
+          {
+            title: "Domination & Scale",
+            description: "We track your rankings in specific ${city.name} zip codes and expand your reach.",
+          },
+        ]}
+        faqs={[
+          {
+            question: `Why choose an agency that knows ${city.name}?`,
+            answer: `Marketing in North Mississippi is different. We understand the local culture and how to connect with customers in ${city.name} effectively.`,
+          },
+          {
+            question: "How long to rank in the Map Pack?",
+            answer: "For most local niches, we see significant movement in 60-90 days, getting you more calls quickly.",
+          },
+          {
+            question: "Do you work with other businesses in my area?",
+            answer: "We typically only work with one business per industry in a specific city to avoid conflicts of interest.",
+          },
+        ]}
+      />
+
+      {/* Nearby Locations Section for Internal Linking */}
+      <Section variant="navy" className="py-16">
+        <Container>
+           <h3 className="text-2xl font-bold font-heading text-white mb-8 text-center">
+             We Also Serve Nearby Areas
+           </h3>
+           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+             {otherCities.map((other: City) => (
+               <Link key={other.slug} href={`/locations/${other.slug}`} className="block group">
+                 <Card className="bg-white/5 border-white/10 hover:bg-white/10 transition-colors">
+                   <CardHeader>
+                     <div className="flex items-center justify-between text-white">
+                        <CardTitle className="text-lg">{other.name}, {other.state}</CardTitle>
+                        <ArrowRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                     </div>
+                   </CardHeader>
+                 </Card>
+               </Link>
+             ))}
+           </div>
+           <div className="text-center mt-8">
+              <Link href="/locations" className="text-primary hover:text-white transition-colors text-sm font-bold">
+                View All Service Areas
+              </Link>
+           </div>
+        </Container>
+      </Section>
+    </>
   );
 }
-

@@ -1,51 +1,72 @@
 [
   {
-    "slug": "austin",
-    "name": "Austin",
-    "state": "TX",
-    "description": "Austin's most trusted digital growth partner."
+    "slug": "southaven",
+    "name": "Southaven",
+    "state": "MS",
+    "description": "Dominate the DeSoto County market with Southaven's premier digital growth agency.",
+    "keywords": ["DeSoto County", "Memphis Metro", "Stateline"]
   },
   {
-    "slug": "houston",
-    "name": "Houston",
-    "state": "TX",
-    "description": "Helping Houston businesses scale with local SEO."
+    "slug": "olive-branch",
+    "name": "Olive Branch",
+    "state": "MS",
+    "description": "High-performance marketing services for Olive Branch's fastest-growing businesses.",
+    "keywords": ["Logistics", "Industrial Park", "DeSoto"]
   },
   {
-    "slug": "dallas",
-    "name": "Dallas",
-    "state": "TX",
-    "description": "Premier marketing agency serving the DFW metroplex."
+    "slug": "tupelo",
+    "name": "Tupelo",
+    "state": "MS",
+    "description": "Rank #1 in the All-America City. Tupelo's trusted partner for SEO and Ads.",
+    "keywords": ["Lee County", "Northeast Mississippi", "Manufacturing"]
   },
   {
-    "slug": "san-antonio",
-    "name": "San Antonio",
-    "state": "TX",
-    "description": "Digital marketing solutions for San Antonio companies."
+    "slug": "oxford",
+    "name": "Oxford",
+    "state": "MS",
+    "description": "Smart marketing for Oxford. Capture the university crowd and local residents alike.",
+    "keywords": ["Lafayette County", "Ole Miss", "University"]
   },
   {
-    "slug": "denver",
-    "name": "Denver",
-    "state": "CO",
-    "description": "Elevate your Denver business with data-driven marketing."
+    "slug": "hernando",
+    "name": "Hernando",
+    "state": "MS",
+    "description": "Historic charm meets modern marketing. Grow your Hernando business today.",
+    "keywords": ["DeSoto County", "Town Square"]
   },
   {
-    "slug": "phoenix",
-    "name": "Phoenix",
-    "state": "AZ",
-    "description": "Heat up your sales pipeline in Phoenix."
+    "slug": "starkville",
+    "name": "Starkville",
+    "state": "MS",
+    "description": "Data-driven growth strategies for Starkville and the Golden Triangle area.",
+    "keywords": ["Oktibbeha County", "MSU", "Golden Triangle"]
   },
   {
-    "slug": "nashville",
-    "name": "Nashville",
-    "state": "TN",
-    "description": "Stand out in Music City with superior SEO."
+    "slug": "horn-lake",
+    "name": "Horn Lake",
+    "state": "MS",
+    "description": "Aggressive SEO and lead generation for Horn Lake contractors and services.",
+    "keywords": ["DeSoto", "Bullfrog Corner"]
   },
   {
-    "slug": "miami",
-    "name": "Miami",
-    "state": "FL",
-    "description": "Capture the Miami market with targeted ads."
+    "slug": "corinth",
+    "name": "Corinth",
+    "state": "MS",
+    "description": "Connect with customers in Corinth and Alcorn County with targeted campaigns.",
+    "keywords": ["Crossroads", "Alcorn County"]
+  },
+  {
+    "slug": "grenada",
+    "name": "Grenada",
+    "state": "MS",
+    "description": "Expand your reach in Grenada with high-converting websites and local SEO.",
+    "keywords": ["Grenada County", "I-55"]
+  },
+  {
+    "slug": "batesville",
+    "name": "Batesville",
+    "state": "MS",
+    "description": "Capture the Panola County market with Batesville's top-rated agency.",
+    "keywords": ["Panola County", "Square"]
   }
 ]
-
