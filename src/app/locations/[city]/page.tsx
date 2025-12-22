@@ -8,6 +8,7 @@ import { MapPin, Search, BarChart3, Star, ArrowRight } from "lucide-react";
 import { Section } from "@/components/layout/Section";
 import { Container } from "@/components/layout/Container";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { constructServiceAreaSchema } from "@/lib/seo";
 
 // Read cities data
 const citiesPath = path.join(process.cwd(), "data", "cities.json");
@@ -55,7 +56,17 @@ export default async function CityPage({ params }: { params: Promise<{ city: str
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(constructServiceAreaSchema(city)),
+        }}
+      />
       <ServiceTemplate
+        breadcrumbs={[
+          { label: "Locations", href: "/locations" },
+          { label: city.name, href: `/locations/${city.slug}` },
+        ]}
         title={`Digital Marketing in ${city.name}, ${city.state}`}
         subtitle={`The premier growth partner for businesses in ${city.name} and the surrounding North Mississippi area.`}
         description={`If you're running a business in ${city.name}, you know that word-of-mouth isn't enough anymore. To dominate the ${city.name} market, you need a digital engine that captures customers exactly when they're searching. We specialize in helping ${city.name} companies—from contractors to clinics—scale their revenue through hyper-local SEO and high-intent advertising.`}

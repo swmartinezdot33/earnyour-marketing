@@ -5,6 +5,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { constructLocalBusinessSchema } from "@/lib/seo";
 
 // Fallback fonts from Google
 const oswald = Oswald({
@@ -79,6 +80,12 @@ export default function RootLayout({
           inter.variable
         )}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(constructLocalBusinessSchema()),
+          }}
+        />
         <Navbar />
         <main className="flex-1">
           {children}

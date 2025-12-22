@@ -10,6 +10,10 @@ export const metadata: Metadata = {
 export default function LocalSEOPage() {
   return (
     <ServiceTemplate
+      breadcrumbs={[
+        { label: "Services", href: "/services" },
+        { label: "Local SEO", href: "/services/local-seo" },
+      ]}
       title="Dominate Your Local Market"
       subtitle="Stop losing customers to competitors. We help you rank #1 on Google Maps and Search for high-intent local keywords."
       description="Local SEO is the lifeline of any service-based business. When customers in your area need a service, they turn to Google. If you aren't in the 'Map Pack' (the top 3 results), you are invisible. We fix that by optimizing every aspect of your online presence to signal authority and relevance to Google."

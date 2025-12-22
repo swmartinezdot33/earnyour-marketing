@@ -6,6 +6,8 @@ import { Section } from "@/components/layout/Section";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { CTA } from "@/components/home/CTA";
+import { ServiceAreaLinks } from "@/components/locations/ServiceAreaLinks";
+import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 
 interface ServiceTemplateProps {
   title: string;
@@ -15,6 +17,7 @@ interface ServiceTemplateProps {
   features: string[];
   process: { title: string; description: string }[];
   faqs: { question: string; answer: string }[];
+  breadcrumbs?: { label: string; href: string }[];
 }
 
 export function ServiceTemplate({
@@ -25,9 +28,12 @@ export function ServiceTemplate({
   features,
   process,
   faqs,
+  breadcrumbs,
 }: ServiceTemplateProps) {
   return (
     <>
+      {breadcrumbs && <Breadcrumbs items={breadcrumbs} />}
+      
       {/* Hero */}
       <Section className="pt-24 pb-16 md:pt-32 md:pb-24 bg-secondary text-secondary-foreground">
         <Container>
@@ -133,6 +139,8 @@ export function ServiceTemplate({
           </div>
         </Container>
       </Section>
+
+      <ServiceAreaLinks />
 
       <CTA />
     </>

@@ -10,6 +10,10 @@ export const metadata: Metadata = {
 export default function GoogleAdsPage() {
   return (
     <ServiceTemplate
+      breadcrumbs={[
+        { label: "Services", href: "/services" },
+        { label: "Google Ads", href: "/services/google-ads" },
+      ]}
       title="High-Intent Google Ads"
       subtitle="Capture customers the moment they are searching for what you offer."
       description="Google Ads is the fastest way to generate leads. We create highly targeted campaigns that put your business in front of customers exactly when they are looking for your services. No wasted spend, just high-quality leads."

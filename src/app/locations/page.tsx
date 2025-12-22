@@ -7,6 +7,7 @@ import { Container } from "@/components/layout/Container";
 import { Section } from "@/components/layout/Section";
 import { CTA } from "@/components/home/CTA";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
 
 export const metadata: Metadata = {
   title: "Service Areas | Digital Marketing in North Mississippi",
@@ -19,6 +20,7 @@ const cities = JSON.parse(fs.readFileSync(citiesPath, "utf8"));
 export default function LocationsHubPage() {
   return (
     <>
+      <Breadcrumbs items={[{ label: "Locations", href: "/locations" }]} />
       <Section className="bg-brand-navy text-white pt-24 pb-16 md:pt-32 md:pb-24">
         <Container className="text-center">
           <h1 className="text-4xl md:text-6xl font-bold font-heading mb-6">
