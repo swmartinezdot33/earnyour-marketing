@@ -40,7 +40,7 @@ const services = [
   },
   {
     title: "Custom Software",
-    description: "Beskpoke portals, dashboards, and integrations to solve unique business problems.",
+    description: "Bespoke portals, dashboards, and integrations to solve unique business problems.",
     icon: Code,
     href: "/services/custom-software",
   },
