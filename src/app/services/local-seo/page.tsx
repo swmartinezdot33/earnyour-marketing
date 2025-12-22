@@ -72,7 +72,7 @@ export default function LocalSEOPage() {
         },
         {
           question: "What is the difference between SEO and Local SEO?",
-          answer: "Local SEO focuses on ranking for geographic-specific searches (e.g., 'plumber in Austin'), whereas general SEO focuses on global ranking.",
+          answer: "Local SEO focuses on ranking for geographic-specific searches (e.g., 'plumber in Southaven'), whereas general SEO focuses on global ranking.",
         },
       ]}
     />

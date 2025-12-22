@@ -6,16 +6,19 @@ export function constructMetadata({
   image = "/og-image.jpg",
   icons = "/favicon.ico",
   noIndex = false,
+  canonical,
 }: {
   title?: string;
   description?: string;
   image?: string;
   icons?: string;
   noIndex?: boolean;
+  canonical?: string;
 } = {}): Metadata {
   return {
     title,
     description,
+    alternates: canonical ? { canonical } : undefined,
     openGraph: {
       title,
       description,
@@ -97,6 +100,21 @@ export function constructLocalBusinessSchema() {
         "sameAs": "https://en.wikipedia.org/wiki/Oxford,_Mississippi"
       }
     ]
+  };
+}
+
+export function constructFAQSchema(faqs: { question: string; answer: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqs.map((faq) => ({
+      "@type": "Question",
+      "name": faq.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.answer
+      }
+    }))
   };
 }
 

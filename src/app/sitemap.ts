@@ -25,6 +25,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/services/custom-software",
     "/services/api-integrations",
     "/free-audit",
+    "/locations",
+    "/industries",
+    "/tools/google-review-link-generator",
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),

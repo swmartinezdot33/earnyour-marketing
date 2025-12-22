@@ -3,6 +3,7 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Container } from "@/components/layout/Container";
 import { Section } from "@/components/layout/Section";
+import { constructFAQSchema } from "@/lib/seo";
 
 const faqs = [
   {
@@ -15,7 +16,7 @@ const faqs = [
   },
   {
     question: "Do you work with businesses outside of your local area?",
-    answer: "Yes! While we are based in Austin, we help local businesses across the United States. Our systems work regardless of your location.",
+    answer: "Yes! While we focus on North Mississippi, we help local businesses across the United States. Our systems work regardless of your location.",
   },
   {
     question: "What makes you different from other agencies?",
@@ -28,8 +29,16 @@ const faqs = [
 ];
 
 export function FAQ() {
+  const faqSchema = constructFAQSchema(faqs);
+
   return (
     <Section>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(faqSchema),
+        }}
+      />
       <Container>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24">
           <div>

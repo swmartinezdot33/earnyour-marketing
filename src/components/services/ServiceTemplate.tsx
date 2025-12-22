@@ -8,6 +8,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { CTA } from "@/components/home/CTA";
 import { ServiceAreaLinks } from "@/components/locations/ServiceAreaLinks";
 import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
+import { constructFAQSchema } from "@/lib/seo";
 
 interface ServiceTemplateProps {
   title: string;
@@ -119,6 +120,12 @@ export function ServiceTemplate({
 
       {/* FAQ */}
       <Section>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(constructFAQSchema(faqs)),
+          }}
+        />
         <Container>
           <div className="max-w-3xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold font-heading text-brand-navy mb-8 text-center">
