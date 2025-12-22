@@ -21,35 +21,6 @@ const inter = Inter({
   display: "swap",
 });
 
-// Local fonts setup (commented out until files are present)
-/*
-const bernhard = localFont({
-  src: [
-    {
-      path: '../../public/fonts/BernhardGothic-Bold.woff2',
-      weight: '700',
-      style: 'normal',
-    },
-    // Add other weights
-  ],
-  variable: '--font-heading',
-  display: 'swap',
-});
-
-const garet = localFont({
-  src: [
-    {
-      path: '../../public/fonts/Garet-Book.woff2',
-      weight: '400',
-      style: 'normal',
-    },
-    // Add other weights
-  ],
-  variable: '--font-body',
-  display: 'swap',
-});
-*/
-
 export const metadata: Metadata = {
   title: {
     default: "EarnYour Marketing | Performance First Local Growth Partner",
@@ -57,6 +28,17 @@ export const metadata: Metadata = {
   },
   description: "Performance first local growth partner. SEO, Ads, CRM, Automations, and Custom Software for local businesses.",
   metadataBase: new URL("https://earnyour.com"),
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -74,6 +56,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+      </head>
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased flex flex-col",
