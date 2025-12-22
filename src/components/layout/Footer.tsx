@@ -134,7 +134,7 @@ export function Footer() {
            
             <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
               <p className="text-xs text-secondary-foreground/60">
-                &copy; {new Date().getFullYear()} EarnYour Marketing. All rights reserved.
+                &copy; 2026 EarnYour Marketing. All rights reserved.
               </p>
               <div className="flex gap-6">
                 {footerLinks.legal.map((link) => (
