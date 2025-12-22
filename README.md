@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# EarnYour Marketing Agency Website
+
+The premium, high-performance marketing agency website for EarnYour Marketing.
+
+## Tech Stack
+
+- **Framework:** Next.js 15 (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS + Shadcn UI
+- **Content:** MDX (Blog & Case Studies)
+- **Forms:** Server Actions + Zod
+- **Database:** Local JSON (Dev) / Supabase (Prod)
+- **Email:** Resend
 
 ## Getting Started
 
-First, run the development server:
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+2. **Run local development server:**
+   ```bash
+   npm run dev
+   ```
+
+3. **Open [http://localhost:3000](http://localhost:3000)**
+
+## Environment Variables
+
+Copy `.env.example` to `.env.local`:
+
+```env
+RESEND_API_KEY=re_123...
+CONTACT_TO_EMAIL=your@email.com
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Content Management
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Blog Posts
+Add new `.mdx` files to `content/blog/`. Use the frontmatter format:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```yaml
+---
+title: "Post Title"
+date: "YYYY-MM-DD"
+description: "Short summary."
+tags: ["SEO", "Ads"]
+author: "Name"
+readingTime: "5 min read"
+---
+```
 
-## Learn More
+### Case Studies
+Add new `.mdx` files to `content/case-studies/`.
 
-To learn more about Next.js, take a look at the following resources:
+### Locations
+Edit `data/cities.json` to add or remove cities. The `/locations/[city]` pages will be generated automatically.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Branding
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Colors:** Edited in `src/app/globals.css` via CSS variables.
+- **Fonts:** Configured in `src/app/layout.tsx`. Currently using Google Fonts (Oswald/Inter) as fallbacks. To use local fonts, place files in `public/fonts/` and uncomment the `localFont` code in `layout.tsx`.
 
-## Deploy on Vercel
+## Deployment
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Connect this repo to Vercel.
+Add the environment variables in Vercel project settings.
+The build command is `npm run build`.

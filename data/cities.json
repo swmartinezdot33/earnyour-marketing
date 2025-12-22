@@ -1,0 +1,51 @@
+[
+  {
+    "slug": "austin",
+    "name": "Austin",
+    "state": "TX",
+    "description": "Austin's most trusted digital growth partner."
+  },
+  {
+    "slug": "houston",
+    "name": "Houston",
+    "state": "TX",
+    "description": "Helping Houston businesses scale with local SEO."
+  },
+  {
+    "slug": "dallas",
+    "name": "Dallas",
+    "state": "TX",
+    "description": "Premier marketing agency serving the DFW metroplex."
+  },
+  {
+    "slug": "san-antonio",
+    "name": "San Antonio",
+    "state": "TX",
+    "description": "Digital marketing solutions for San Antonio companies."
+  },
+  {
+    "slug": "denver",
+    "name": "Denver",
+    "state": "CO",
+    "description": "Elevate your Denver business with data-driven marketing."
+  },
+  {
+    "slug": "phoenix",
+    "name": "Phoenix",
+    "state": "AZ",
+    "description": "Heat up your sales pipeline in Phoenix."
+  },
+  {
+    "slug": "nashville",
+    "name": "Nashville",
+    "state": "TN",
+    "description": "Stand out in Music City with superior SEO."
+  },
+  {
+    "slug": "miami",
+    "name": "Miami",
+    "state": "FL",
+    "description": "Capture the Miami market with targeted ads."
+  }
+]
+
