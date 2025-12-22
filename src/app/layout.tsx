@@ -5,6 +5,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { StickyMobileCTA } from "@/components/layout/StickyMobileCTA";
 import { constructLocalBusinessSchema } from "@/lib/seo";
 
 // Fallback fonts from Google
@@ -91,6 +92,7 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
+        <StickyMobileCTA />
       </body>
     </html>
   );
