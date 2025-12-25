@@ -46,7 +46,7 @@ export default function ContactPage() {
                     <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                       <MapPin className="h-5 w-5 text-primary" />
                     </div>
-                    <span className="text-lg">123 Growth Street, Suite 100<br/>Austin, TX 78701</span>
+                    <span className="text-lg">2304 Jackson Ave W<br/>Oxford, MS 38655</span>
                   </div>
                 </div>
               </div>

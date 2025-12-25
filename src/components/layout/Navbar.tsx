@@ -4,12 +4,14 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
+import { useEffect, useState } from "react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Container } from "@/components/layout/Container";
 import { Logo } from "@/components/brand/Logo";
+import { LogoutButton } from "@/components/auth/LogoutButton";
 
 const navItems = [
   { title: "Services", href: "/services" },
@@ -21,7 +23,24 @@ const navItems = [
 
 export function Navbar() {
   const [isOpen, setIsOpen] = React.useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState<"admin" | "student" | null>(null);
   const pathname = usePathname();
+
+  useEffect(() => {
+    // Check if user is logged in
+    fetch("/api/auth/session")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.session) {
+          setIsLoggedIn(true);
+          setUserRole(data.session.role || "student");
+        }
+      })
+      .catch(() => {
+        // Not logged in
+      });
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -43,9 +62,38 @@ export function Navbar() {
                 {item.title}
               </Link>
             ))}
-            <Button asChild>
-              <Link href="/free-audit">Get a Free Audit</Link>
-            </Button>
+            {isLoggedIn ? (
+              <>
+                <Link
+                  href="/courses"
+                  className={cn(
+                    "text-sm font-medium transition-colors hover:text-primary",
+                    pathname.startsWith("/courses") ? "text-primary" : "text-foreground/80"
+                  )}
+                >
+                  Courses
+                </Link>
+                <Link
+                  href={userRole === "admin" ? "/admin/courses" : "/dashboard"}
+                  className={cn(
+                    "text-sm font-medium transition-colors hover:text-primary",
+                    pathname.startsWith("/admin") || pathname.startsWith("/dashboard") ? "text-primary" : "text-foreground/80"
+                  )}
+                >
+                  {userRole === "admin" ? "Admin" : "Dashboard"}
+                </Link>
+                <LogoutButton />
+              </>
+            ) : (
+              <>
+                <Button asChild variant="ghost">
+                  <Link href="/login">Login</Link>
+                </Button>
+                <Button asChild>
+                  <Link href="/free-audit">Get a Free Audit</Link>
+                </Button>
+              </>
+            )}
           </nav>
 
           {/* Mobile Nav */}
@@ -73,11 +121,46 @@ export function Navbar() {
                       {item.title}
                     </Link>
                   ))}
-                  <Button asChild className="w-full mt-4">
-                    <Link href="/free-audit" onClick={() => setIsOpen(false)}>
-                      Get a Free Audit
-                    </Link>
-                  </Button>
+                  {isLoggedIn ? (
+                    <>
+                      <Link
+                        href="/courses"
+                        onClick={() => setIsOpen(false)}
+                        className={cn(
+                          "text-lg font-medium transition-colors hover:text-primary",
+                          pathname.startsWith("/courses") ? "text-primary" : "text-foreground/80"
+                        )}
+                      >
+                        Courses
+                      </Link>
+                      <Link
+                        href={userRole === "admin" ? "/admin/courses" : "/dashboard"}
+                        onClick={() => setIsOpen(false)}
+                        className={cn(
+                          "text-lg font-medium transition-colors hover:text-primary",
+                          pathname.startsWith("/admin") || pathname.startsWith("/dashboard") ? "text-primary" : "text-foreground/80"
+                        )}
+                      >
+                        {userRole === "admin" ? "Admin" : "Dashboard"}
+                      </Link>
+                      <div className="mt-4">
+                        <LogoutButton />
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <Button asChild variant="outline" className="w-full mt-4">
+                        <Link href="/login" onClick={() => setIsOpen(false)}>
+                          Login
+                        </Link>
+                      </Button>
+                      <Button asChild className="w-full mt-2">
+                        <Link href="/free-audit" onClick={() => setIsOpen(false)}>
+                          Get a Free Audit
+                        </Link>
+                      </Button>
+                    </>
+                  )}
                 </nav>
               </div>
             </SheetContent>
@@ -87,4 +170,3 @@ export function Navbar() {
     </header>
   );
 }
-

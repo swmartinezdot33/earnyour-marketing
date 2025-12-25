@@ -112,8 +112,8 @@ export function Footer() {
            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
               <div className="space-y-2 text-sm text-secondary-foreground/80">
                   <h4 className="font-bold text-white mb-2">Contact Us</h4>
-                  <p>123 Main Street, Suite 200</p>
-                  <p>Southaven, MS 38671</p>
+                  <p>2304 Jackson Ave W</p>
+                  <p>Oxford, MS 38655</p>
                   <p>
                     <a href="mailto:hello@earnyour.com" className="hover:text-primary">
                       hello@earnyour.com

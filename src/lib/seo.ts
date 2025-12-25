@@ -56,10 +56,10 @@ export function constructLocalBusinessSchema() {
     "telephone": "+16625550123",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "123 Main Street, Suite 200",
-      "addressLocality": "Southaven",
+      "streetAddress": "2304 Jackson Ave W",
+      "addressLocality": "Oxford",
       "addressRegion": "MS",
-      "postalCode": "38671",
+      "postalCode": "38655",
       "addressCountry": "US"
     },
     "url": "https://earnyour.com",
@@ -128,10 +128,10 @@ export function constructServiceAreaSchema(city: { name: string; state: string; 
       "name": "EarnYour Marketing",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "123 Main Street, Suite 200",
-        "addressLocality": "Southaven",
+        "streetAddress": "2304 Jackson Ave W",
+        "addressLocality": "Oxford",
         "addressRegion": "MS",
-        "postalCode": "38671",
+        "postalCode": "38655",
         "addressCountry": "US"
       }
     },

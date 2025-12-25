@@ -35,6 +35,18 @@ RESEND_API_KEY=re_123...
 CONTACT_TO_EMAIL=your@email.com
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+
+# GoHighLevel Integration (Required for course platform)
+# Default location PIT token for regular users (courses, memberships, marketing)
+GHL_DEFAULT_LOCATION_PIT_TOKEN=your-default-location-pit-token
+# Or use GHL_API_TOKEN as fallback
+GHL_API_TOKEN=your-ghl-pit-token
+
+# GoHighLevel Default Location (For non-whitelabel users)
+GHL_DEFAULT_LOCATION_ID=GQOh2EMzgc3bRAfN7Q9j
+
+# GoHighLevel Agency Token (Required for SaaS - Creating Subaccounts)
+GHL_AGENCY_PIT_TOKEN=pit-cf8f0fb1-7a9c-4ae2-9fd0-56b9ca28519d
 ```
 
 ## Content Management
@@ -71,3 +83,12 @@ Access the hub at `/locations`.
 Connect this repo to Vercel.
 Add the environment variables in Vercel project settings.
 The build command is `npm run build`.
+
+## GHL Whitelabel Setup
+
+See [GHL_WHITELABEL_SETUP.md](./GHL_WHITELABEL_SETUP.md) for detailed instructions on how to:
+- Get your GHL API token and Location ID
+- Create a whitelabel account
+- Set up custom fields and pipelines
+- Link users to whitelabel accounts
+- Test the integration
