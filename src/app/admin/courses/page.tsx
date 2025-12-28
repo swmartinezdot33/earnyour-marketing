@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { getAllCourses } from "@/lib/db/courses";
+import type { Course } from "@/lib/db/schema";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/layout/Container";
@@ -24,7 +25,7 @@ export default async function AdminCoursesPage() {
     redirect("/dashboard");
   }
 
-  let courses = [];
+  let courses: Course[] = [];
   try {
     courses = await getAllCourses(false); // Get all courses, including unpublished
   } catch (error) {

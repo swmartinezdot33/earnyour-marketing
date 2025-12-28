@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { getAllCourses } from "@/lib/db/courses";
+import type { Course } from "@/lib/db/schema";
 import { Container } from "@/components/layout/Container";
 import { Section } from "@/components/layout/Section";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function CoursesPage() {
-  let courses = [];
+  let courses: Course[] = [];
   try {
     courses = await getAllCourses(true); // Published only
   } catch (error) {
