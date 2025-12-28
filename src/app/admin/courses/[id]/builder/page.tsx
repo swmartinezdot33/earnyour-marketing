@@ -89,7 +89,7 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
           </Link>
         </div>
 
-        <CourseBuilder courseId={courseId} initialCourse={course} onUpdate={fetchCourse} />
+        <CourseBuilder courseId={courseId} initialCourse={course} onUpdate={() => fetchCourse(courseId)} />
       </Container>
     </Section>
   );

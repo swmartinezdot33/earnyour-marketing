@@ -79,14 +79,7 @@ export async function getOrCreateUser(email: string, name?: string) {
       deleted_at: null,
     });
     
-    // Sync new user to GHL in the appropriate location
-    try {
-      const { syncUserToGHL } = await import("@/lib/ghl/contacts");
-      await syncUserToGHL(user.id);
-    } catch (error) {
-      console.error("Error syncing new user to GHL:", error);
-      // Don't fail user creation if GHL sync fails
-    }
+    // GHL integration removed - no longer syncing users to GHL
   }
   return user;
 }
