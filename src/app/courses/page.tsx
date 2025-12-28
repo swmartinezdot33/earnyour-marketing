@@ -13,8 +13,18 @@ export const metadata: Metadata = {
   description: "Browse our training courses",
 };
 
+// Force dynamic rendering since we need Supabase and session data
+export const dynamic = 'force-dynamic';
+
 export default async function CoursesPage() {
-  const courses = await getAllCourses(true); // Published only
+  let courses = [];
+  try {
+    courses = await getAllCourses(true); // Published only
+  } catch (error) {
+    console.error("Error fetching courses:", error);
+    // Continue with empty courses array if fetch fails
+  }
+  
   const session = await getSession();
 
   return (

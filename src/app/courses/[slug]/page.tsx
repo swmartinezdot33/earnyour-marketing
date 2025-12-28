@@ -9,23 +9,41 @@ import { isUserEnrolled } from "@/lib/db/enrollments";
 import { PurchaseButton } from "@/components/courses/PurchaseButton";
 import Link from "next/link";
 
+// Force dynamic rendering since we need Supabase and session data
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const course = await getCourseBySlug(slug);
-  
-  if (!course) {
-    return { title: "Course Not Found" };
-  }
+  try {
+    const course = await getCourseBySlug(slug);
+    
+    if (!course) {
+      return { title: "Course Not Found" };
+    }
 
-  return {
-    title: `${course.title} | EarnYour Marketing`,
-    description: course.short_description || course.description || undefined,
-  };
+    return {
+      title: `${course.title} | EarnYour Marketing`,
+      description: course.short_description || course.description || undefined,
+    };
+  } catch (error) {
+    return { title: "Course | EarnYour Marketing" };
+  }
 }
 
 export default async function CoursePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const course = await getCourseBySlug(slug);
+  let course;
+  try {
+    course = await getCourseBySlug(slug);
+  } catch (error) {
+    console.error("Error fetching course:", error);
+    notFound();
+  }
+  
+  if (!course) {
+    notFound();
+  }
+  
   const session = await getSession();
   
   if (!course) {

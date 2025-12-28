@@ -14,6 +14,9 @@ export const metadata: Metadata = {
   description: "Manage your courses",
 };
 
+// Force dynamic rendering since we need Supabase and session data
+export const dynamic = 'force-dynamic';
+
 export default async function AdminCoursesPage() {
   const session = await getSession();
   
@@ -21,7 +24,13 @@ export default async function AdminCoursesPage() {
     redirect("/dashboard");
   }
 
-  const courses = await getAllCourses(false); // Get all courses, including unpublished
+  let courses = [];
+  try {
+    courses = await getAllCourses(false); // Get all courses, including unpublished
+  } catch (error) {
+    console.error("Error fetching courses:", error);
+    // Continue with empty courses array if fetch fails
+  }
 
   return (
     <Section className="pt-24 pb-16">
