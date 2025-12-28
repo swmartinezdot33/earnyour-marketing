@@ -54,3 +54,6 @@ export function PurchaseButton({ courseId, price }: { courseId: string; price: n
 
 
 
+
+
+

@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { getUserById, updateUser } from "@/lib/db/users";
-import { getSupabaseClient } from "@/lib/db/courses";
-import { getGHLClientForUser } from "@/lib/ghl/user-location";
 
 export async function DELETE(req: NextRequest) {
   try {
@@ -21,17 +19,6 @@ export async function DELETE(req: NextRequest) {
       status: "deleted",
       deleted_at: new Date().toISOString(),
     });
-
-    // Delete from GHL if contact exists
-    if (user.ghl_contact_id) {
-      try {
-        const client = await getGHLClientForUser(user.id);
-        await client.deleteContact(user.ghl_contact_id);
-      } catch (ghlError) {
-        console.error("Error deleting contact from GHL:", ghlError);
-        // Don't fail the account deletion if GHL deletion fails
-      }
-    }
 
     // Cancel any active Stripe subscriptions (if subscriptions are implemented)
     // This would require Stripe subscription management

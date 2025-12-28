@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import { createCourse } from "@/lib/db/courses";
+import { createCourse, getSupabaseClient } from "@/lib/db/courses";
 import { createStripeProduct } from "@/lib/stripe/products";
 import { z } from "zod";
 
@@ -11,6 +11,8 @@ const courseSchema = z.object({
   short_description: z.string().optional(),
   price: z.number().min(0),
   image_url: z.string().url().optional().or(z.literal("")),
+  stripe_product_id: z.string().optional(),
+  stripe_price_id: z.string().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -35,16 +37,28 @@ export async function POST(request: NextRequest) {
       created_by: session.userId,
       published: false,
       image_url: validated.image_url || null,
-      stripe_product_id: null,
-      stripe_price_id: null,
+      stripe_product_id: validated.stripe_product_id || null,
+      stripe_price_id: validated.stripe_price_id || null,
     });
 
-    // Create Stripe product
-    try {
-      await createStripeProduct(course);
-    } catch (stripeError) {
-      console.error("Stripe product creation failed:", stripeError);
-      // Continue even if Stripe fails - can be fixed later
+    if (validated.stripe_product_id) {
+      // Link existing Stripe product
+      const client = getSupabaseClient();
+      await (client.from("stripe_products") as any).insert([
+        {
+          course_id: course.id,
+          stripe_product_id: validated.stripe_product_id,
+          stripe_price_id: validated.stripe_price_id || null,
+        },
+      ]);
+    } else {
+      // Create new Stripe product
+      try {
+        await createStripeProduct(course);
+      } catch (stripeError) {
+        console.error("Stripe product creation failed:", stripeError);
+        // Continue even if Stripe fails - can be fixed later
+      }
     }
 
     return NextResponse.json({ success: true, course });

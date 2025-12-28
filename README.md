@@ -37,16 +37,30 @@ NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 
 # GoHighLevel Integration (Required for course platform)
-# Default location PIT token for regular users (courses, memberships, marketing)
+
+# AGENCY-LEVEL PIT TOKEN (Required for SaaS - Creating/Managing Subaccounts)
+# This token has permissions to create subaccounts and generate subaccount tokens
+# Used for: Creating subaccounts, listing subaccounts, generating subaccount PIT tokens
+GHL_AGENCY_PIT_TOKEN=pit-cf8f0fb1-7a9c-4ae2-9fd0-56b9ca28519d
+
+# DEFAULT LOCATION PIT TOKEN (Required for regular users)
+# This is a PIT token for the default location where all regular users are managed
+# Used for: Regular users (courses, memberships, marketing) - NOT whitelabel SaaS customers
 GHL_DEFAULT_LOCATION_PIT_TOKEN=your-default-location-pit-token
 # Or use GHL_API_TOKEN as fallback
 GHL_API_TOKEN=your-ghl-pit-token
 
-# GoHighLevel Default Location (For non-whitelabel users)
+# GoHighLevel Default Location ID (For non-whitelabel users)
+# This is where ALL regular users are created as contacts (not subaccounts)
 GHL_DEFAULT_LOCATION_ID=GQOh2EMzgc3bRAfN7Q9j
 
-# GoHighLevel Agency Token (Required for SaaS - Creating Subaccounts)
-GHL_AGENCY_PIT_TOKEN=pit-cf8f0fb1-7a9c-4ae2-9fd0-56b9ca28519d
+# NOTE: SUBACCOUNT-LEVEL PIT TOKENS are automatically generated and stored
+# in whitelabel_accounts.ghl_api_token when linking a subaccount.
+# These are generated using the agency PIT token and are specific to each subaccount.
+
+# OpenAI API (Required for AI-powered course builder)
+# Used for generating course structures, content, and metadata
+OPENAI_API_KEY=sk-...
 ```
 
 ## Content Management

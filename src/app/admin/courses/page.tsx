@@ -36,11 +36,6 @@ export default async function AdminCoursesPage() {
             </p>
           </div>
           <div className="flex gap-4">
-            <Link href="/admin/whitelabel">
-              <Button variant="outline">
-                Whitelabel Accounts
-              </Button>
-            </Link>
             <Link href="/admin/courses/new">
               <Button>
                 <Plus className="mr-2 h-4 w-4" />
@@ -69,7 +64,7 @@ export default async function AdminCoursesPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {courses.map((course) => (
-              <Link key={course.id} href={`/admin/courses/${course.id}/edit`}>
+              <Link key={course.id} href={`/admin/courses/${course.id}/builder`}>
                 <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer">
                   <CardHeader>
                     <div className="flex justify-between items-start mb-2">

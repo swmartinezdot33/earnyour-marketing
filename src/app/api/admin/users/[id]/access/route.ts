@@ -3,7 +3,6 @@ import { getSession } from "@/lib/auth";
 import { getUserById } from "@/lib/db/users";
 import { enrollUserInCourse, isUserEnrolled } from "@/lib/db/enrollments";
 import { getSupabaseClient } from "@/lib/db/courses";
-import { syncEnrollmentToGHL } from "@/lib/ghl/enrollments";
 import { z } from "zod";
 
 const updateAccessSchema = z.object({
@@ -35,15 +34,7 @@ export async function POST(
       // Grant access
       const alreadyEnrolled = await isUserEnrolled(id, validated.courseId);
       if (!alreadyEnrolled) {
-        const enrollment = await enrollUserInCourse(id, validated.courseId);
-        
-        // Sync to GHL
-        try {
-          await syncEnrollmentToGHL(enrollment.id);
-        } catch (ghlError) {
-          console.error("Error syncing enrollment to GHL:", ghlError);
-          // Don't fail if GHL sync fails
-        }
+        await enrollUserInCourse(id, validated.courseId);
       }
     } else {
       // Revoke access - soft delete enrollment
@@ -52,9 +43,6 @@ export async function POST(
         .update({ completed: false })
         .eq("user_id", id)
         .eq("course_id", validated.courseId);
-
-      // TODO: Revoke GHL course access (remove tags, update custom fields)
-      // This would require implementing revokeCourseAccess in ghl/courses.ts
     }
 
     return NextResponse.json({ success: true });

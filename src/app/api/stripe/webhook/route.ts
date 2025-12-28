@@ -3,7 +3,6 @@ import { getStripeClient } from "@/lib/stripe/config";
 import { headers } from "next/headers";
 import { enrollUserInCourse } from "@/lib/db/enrollments";
 import { getSupabaseClient } from "@/lib/db/courses";
-import { handleCoursePurchase } from "@/lib/ghl/enrollments";
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
@@ -57,7 +56,7 @@ export async function POST(request: NextRequest) {
 
         // Record purchase
         const supabaseClient = getSupabaseClient();
-        const { data: purchase } = await (supabaseClient.from("stripe_purchases") as any).insert([
+        await (supabaseClient.from("stripe_purchases") as any).insert([
           {
             user_id: userId,
             course_id: courseId,
@@ -69,30 +68,6 @@ export async function POST(request: NextRequest) {
           },
         ]).select().single();
 
-        // Sync to GHL with enhanced integration
-        if (customerEmail && purchase) {
-          try {
-            await handleCoursePurchase(
-              userId,
-              courseId,
-              purchase.id,
-              {
-                pipelineId: process.env.GHL_DEFAULT_PIPELINE_ID || undefined,
-                automationId: process.env.GHL_COURSE_AUTOMATION_ID || undefined,
-              }
-            );
-          } catch (ghlError) {
-            console.error("GHL sync error:", ghlError);
-            // Log error but don't fail the webhook
-            await (supabaseClient.from("ghl_sync_logs") as any).insert({
-              user_id: userId,
-              enrollment_id: null,
-              action: "enroll",
-              status: "failed",
-              error_message: ghlError instanceof Error ? ghlError.message : String(ghlError),
-            });
-          }
-        }
       } catch (error) {
         console.error("Error processing enrollment:", error);
         // Return 500 so Stripe retries

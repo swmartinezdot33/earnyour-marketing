@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { createUser } from "@/lib/db/users";
-import { syncUserToGHL } from "@/lib/ghl/contacts";
 import { z } from "zod";
 
 const createUserSchema = z.object({
@@ -31,14 +30,6 @@ export async function POST(req: NextRequest) {
       whitelabel_id: null,
       deleted_at: null,
     });
-
-    // Sync to GHL
-    try {
-      await syncUserToGHL(user.id);
-    } catch (ghlError) {
-      console.error("Error syncing user to GHL:", ghlError);
-      // Don't fail user creation if GHL sync fails
-    }
 
     return NextResponse.json(user);
   } catch (error) {
@@ -76,6 +67,8 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+
+
 
 
 
