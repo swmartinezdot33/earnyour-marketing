@@ -38,10 +38,11 @@ import {
   Trash2,
   Play,
   ExternalLink,
+  Calendar,
+  PlayCircle,
 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Link from "next/link";
-import { EnhancedLessonEditor } from "./EnhancedLessonEditor";
 import { EnhancedLessonEditor } from "./EnhancedLessonEditor";
 
 const CONTENT_TYPES = [
@@ -71,6 +72,7 @@ function SortableLessonItem({
   selected,
   onSelect,
   bulkMode,
+  onEdit,
 }: {
   lesson: any;
   onDelete: (id: string) => void;
@@ -79,6 +81,7 @@ function SortableLessonItem({
   selected?: boolean;
   onSelect?: (id: string, checked: boolean) => void;
   bulkMode?: boolean;
+  onEdit?: (lesson: any) => void;
 }) {
   const [editingTitle, setEditingTitle] = useState(false);
   const [editingDescription, setEditingDescription] = useState(false);
