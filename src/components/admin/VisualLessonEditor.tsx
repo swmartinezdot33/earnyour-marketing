@@ -172,27 +172,14 @@ function SortableLessonItem({
               autoFocus
             />
           ) : (
-            <div className="flex items-start justify-between gap-2">
-              <h4
-                className={`font-medium cursor-pointer hover:text-primary transition-colors ${
-                  !previewMode ? "" : ""
-                }`}
-                onClick={() => !previewMode && setEditingTitle(true)}
-              >
-                {lesson.title}
-              </h4>
-              {courseId && !previewMode && onEdit && (
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="h-8"
-                  onClick={() => onEdit(lesson)}
-                  title="Edit lesson"
-                >
-                  <Edit2 className="h-3 w-3" />
-                </Button>
-              )}
-            </div>
+            <h4
+              className={`font-medium cursor-pointer hover:text-primary transition-colors ${
+                !previewMode ? "" : ""
+              }`}
+              onClick={() => !previewMode && setEditingTitle(true)}
+            >
+              {lesson.title}
+            </h4>
           )}
 
           {editingDescription ? (

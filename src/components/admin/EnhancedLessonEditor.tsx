@@ -195,7 +195,15 @@ export function EnhancedLessonEditor({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="w-[80vw] h-[80vh] max-w-none max-h-none overflow-y-auto">
+      <DialogContent 
+        className="overflow-y-auto"
+        style={{
+          width: "80vw",
+          height: "80vh",
+          maxWidth: "80vw",
+          maxHeight: "80vh",
+        }}
+      >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <ContentIcon className={`h-5 w-5 ${contentTypeConfig?.color || ""}`} />
