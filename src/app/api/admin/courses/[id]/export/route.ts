@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { getSupabaseClient } from "@/lib/db/courses";
+import type { Module, Lesson } from "@/lib/db/schema";
 
 export async function GET(
   request: NextRequest,
