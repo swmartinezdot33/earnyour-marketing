@@ -30,7 +30,21 @@ export async function POST(request: NextRequest) {
     }
 
     // Get or create user
-    const user = await getOrCreateUser(email);
+    let user;
+    try {
+      user = await getOrCreateUser(email);
+    } catch (userError) {
+      console.error("Error getting/creating user:", userError);
+      const errorMessage = userError instanceof Error ? userError.message : "Failed to get or create user";
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Database error: ${errorMessage}`,
+          details: process.env.NODE_ENV === "development" ? (userError instanceof Error ? userError.stack : String(userError)) : undefined,
+        },
+        { status: 500 }
+      );
+    }
 
     // Generate magic link token
     const expiresAt = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
@@ -103,10 +117,24 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Magic link error:", error);
+    
+    // Provide more detailed error information
+    let errorMessage = "Failed to send magic link";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+      // Check for common Supabase errors
+      if (error.message.includes("Supabase credentials")) {
+        errorMessage = "Server configuration error. Supabase credentials are missing.";
+      } else if (error.message.includes("relation") || error.message.includes("does not exist")) {
+        errorMessage = "Database error. Please ensure all tables are created in Supabase.";
+      }
+    }
+    
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to send magic link",
+        error: errorMessage,
+        details: process.env.NODE_ENV === "development" ? (error instanceof Error ? error.stack : String(error)) : undefined,
       },
       { status: 500 }
     );
