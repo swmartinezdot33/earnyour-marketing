@@ -33,7 +33,9 @@ export async function GET(
 
     if (modulesError) throw modulesError;
 
-    const moduleIds = (modulesData || []).map((m: { id: string }) => m.id);
+    // Explicitly cast to array of objects with id to avoid implicit any/never issues
+    const modules = (modulesData || []) as { id: string }[];
+    const moduleIds = modules.map((m) => m.id);
 
     // Get lessons for these modules
     const { data: lessonsData, error: lessonsError } = await client
@@ -43,7 +45,8 @@ export async function GET(
 
     if (lessonsError) throw lessonsError;
 
-    const lessonIds = (lessonsData || []).map((l: { id: string }) => l.id);
+    const lessons = (lessonsData || []) as { id: string }[];
+    const lessonIds = lessons.map((l) => l.id);
 
     // Get progress data
     const { data: progress, error: progressError } = await client

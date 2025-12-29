@@ -292,6 +292,8 @@ export function VisualModuleEditor({
   const [formData, setFormData] = useState({ title: "", description: "" });
   const [loading, setLoading] = useState(false);
   const [aiGenerating, setAiGenerating] = useState(false);
+  const [selectedModules, setSelectedModules] = useState<Set<string>>(new Set());
+  const [bulkMode, setBulkMode] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -557,10 +559,20 @@ export function VisualModuleEditor({
     <div className="space-y-6">
       {/* Add Module Button */}
       {!showForm && !previewMode && (
-        <Button onClick={() => setShowForm(true)} className="w-full" size="lg">
-          <Plus className="mr-2 h-4 w-4" />
-          Add Module
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={() => setShowForm(true)} className="flex-1" size="lg">
+            <Plus className="mr-2 h-4 w-4" />
+            Add Module
+          </Button>
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={() => setBulkMode(!bulkMode)}
+            className={bulkMode ? "bg-accent" : ""}
+          >
+            {bulkMode ? "Exit Bulk Mode" : "Bulk Actions"}
+          </Button>
+        </div>
       )}
 
       {/* Add Module Form */}

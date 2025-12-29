@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseClient } from "@/lib/db/courses";
 import { createSession } from "@/lib/auth";
+import type { User } from "@/lib/db/schema";
 
 /**
  * Setup endpoint to create an admin user for initial production setup
@@ -26,7 +27,7 @@ export async function POST(request: NextRequest) {
     const client = getSupabaseClient();
 
     // Check if user already exists
-    const { data: existingUser, error: checkError } = await client
+    const { data: userData, error: checkError } = await client
       .from("users")
       .select("*")
       .eq("email", email.toLowerCase())
@@ -36,6 +37,7 @@ export async function POST(request: NextRequest) {
       throw checkError;
     }
 
+    const existingUser = userData as User | null;
     let userId: string;
 
     if (existingUser) {
