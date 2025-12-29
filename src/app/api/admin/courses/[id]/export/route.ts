@@ -37,7 +37,7 @@ export async function GET(
 
     // Get lessons for each module
     const modulesWithLessons = await Promise.all(
-      modulesData.map(async (module) => {
+      modulesData.map(async (module: Module) => {
         const { data: lessons, error: lessonsError } = await client
           .from("lessons")
           .select("*")
