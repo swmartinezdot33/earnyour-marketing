@@ -4,9 +4,7 @@ import { Oswald, Inter } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
-import { StickyMobileCTA } from "@/components/layout/StickyMobileCTA";
+import { ConditionalNavbar } from "@/components/layout/ConditionalNavbar";
 import { constructLocalBusinessSchema } from "@/lib/seo";
 import { ToastContainer } from "@/components/ui/toast";
 
@@ -90,14 +88,11 @@ export default function RootLayout({
             __html: JSON.stringify(constructLocalBusinessSchema()),
           }}
         />
-        <Navbar />
-        <main className="flex-1">
+        <ConditionalNavbar>
           {children}
-        </main>
-                <Footer />
-                <StickyMobileCTA />
-                <ToastContainer />
-              </body>
-            </html>
-          );
-        }
+        </ConditionalNavbar>
+        <ToastContainer />
+      </body>
+    </html>
+  );
+}

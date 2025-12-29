@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Container } from "@/components/layout/Container";
 import { Logo } from "@/components/brand/Logo";
-import { LogoutButton } from "@/components/auth/LogoutButton";
 
 const navItems = [
   { title: "Services", href: "/services" },
@@ -68,7 +67,7 @@ export function Navbar() {
                   href="/courses"
                   className={cn(
                     "text-sm font-medium transition-colors hover:text-primary",
-                    pathname.startsWith("/courses") ? "text-primary" : "text-foreground/80"
+                    pathname.startsWith("/courses") && !pathname.startsWith("/courses/") ? "text-primary" : "text-foreground/80"
                   )}
                 >
                   Courses
@@ -82,7 +81,6 @@ export function Navbar() {
                 >
                   {userRole === "admin" ? "Admin" : "Dashboard"}
                 </Link>
-                <LogoutButton />
               </>
             ) : (
               <>
@@ -128,7 +126,7 @@ export function Navbar() {
                         onClick={() => setIsOpen(false)}
                         className={cn(
                           "text-lg font-medium transition-colors hover:text-primary",
-                          pathname.startsWith("/courses") ? "text-primary" : "text-foreground/80"
+                          pathname.startsWith("/courses") && !pathname.startsWith("/courses/") ? "text-primary" : "text-foreground/80"
                         )}
                       >
                         Courses
@@ -143,9 +141,6 @@ export function Navbar() {
                       >
                         {userRole === "admin" ? "Admin" : "Dashboard"}
                       </Link>
-                      <div className="mt-4">
-                        <LogoutButton />
-                      </div>
                     </>
                   ) : (
                     <>
