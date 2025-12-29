@@ -33,10 +33,11 @@ export async function GET(
       .order("order", { ascending: true });
 
     if (modulesError) throw modulesError;
+    const modulesData = (modules || []) as Module[];
 
     // Get lessons for each module
     const modulesWithLessons = await Promise.all(
-      (modules || []).map(async (module) => {
+      modulesData.map(async (module) => {
         const { data: lessons, error: lessonsError } = await client
           .from("lessons")
           .select("*")
@@ -44,10 +45,11 @@ export async function GET(
           .order("order", { ascending: true });
 
         if (lessonsError) throw lessonsError;
+        const lessonsData = (lessons || []) as Lesson[];
 
         // Get lesson content
         const lessonsWithContent = await Promise.all(
-          (lessons || []).map(async (lesson) => {
+          lessonsData.map(async (lesson) => {
             const { data: content, error: contentError } = await client
               .from("lesson_content")
               .select("*")
