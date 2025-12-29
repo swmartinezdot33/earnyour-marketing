@@ -17,6 +17,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check for required environment variables
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      console.error("Missing Supabase environment variables");
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: "Server configuration error. Please contact support." 
+        },
+        { status: 500 }
+      );
+    }
+
     // Get or create user
     const user = await getOrCreateUser(email);
 
