@@ -67,7 +67,7 @@ export function CoursePreview({ courseId, course, modules }: CoursePreviewProps)
               />
             </div>
           )}
-          <h1 className="text-4xl font-bold font-heading mb-4">{course.title}</h1>
+          <h1 className="text-4xl font-bold font-heading mb-4 text-white">{course.title}</h1>
           {course.short_description && (
             <p className="text-xl text-white/90 mb-4">{course.short_description}</p>
           )}
