@@ -96,11 +96,11 @@ export async function GET(
 
     // Get recent enrollments
     const recentEnrollments = enrollmentsData
-      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      .sort((a, b) => new Date(b.enrolled_at).getTime() - new Date(a.enrolled_at).getTime())
       .slice(0, 10)
       .map((e) => ({
         id: e.id,
-        created_at: e.created_at,
+        created_at: e.enrolled_at,
         user_email: e.user_id, // You might want to join with users table
       }));
 
