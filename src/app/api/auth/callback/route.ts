@@ -39,10 +39,15 @@ export async function GET(request: NextRequest) {
 
     const user = otpData.user;
 
+    if (!user.email) {
+      console.error("User email is missing");
+      return NextResponse.redirect(new URL("/login?error=missing_email", request.url));
+    }
+
     // Ensure user exists in our users table and get role
     let dbUser;
     try {
-      dbUser = await getOrCreateUser(user.email!);
+      dbUser = await getOrCreateUser(user.email);
     } catch (userError) {
       console.error("Error getting/creating user:", userError);
       // Fallback: try to get existing user
@@ -59,7 +64,7 @@ export async function GET(request: NextRequest) {
     const role = (dbUser?.role as "admin" | "student") || "student";
 
     // Create session in our system
-    await createSession(user.id, user.email!, role);
+    await createSession(user.id, user.email, role);
 
     // Redirect to dashboard
     const redirectUrl = role === "admin" ? "/admin/courses" : "/dashboard";
