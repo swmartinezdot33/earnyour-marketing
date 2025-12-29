@@ -65,7 +65,7 @@ export async function GET(
 
     // Calculate analytics
     const totalEnrollments = enrollmentsData.length;
-    const activeEnrollments = enrollmentsData.filter((e) => e.active).length;
+    const activeEnrollments = enrollmentsData.filter((e) => !e.completed_at).length;
     const totalRevenue = purchasesData.reduce((sum, p) => sum + (p.amount_paid || 0), 0);
     const totalSales = purchasesData.length;
 
