@@ -8,7 +8,19 @@ VALUES (
   'course-media',
   true,
   104857600, -- 100MB
-  ARRAY['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain']
+  ARRAY[
+    'image/jpeg', 
+    'image/png', 
+    'image/gif', 
+    'image/webp', 
+    'image/svg+xml', 
+    'application/pdf', 
+    'application/msword', 
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 
+    'text/plain',
+    'application/vnd.ms-excel',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  ]
 )
 ON CONFLICT (id) DO NOTHING;
 
@@ -24,6 +36,11 @@ VALUES (
 ON CONFLICT (id) DO NOTHING;
 
 -- Set up RLS policies for course-media bucket
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Admins can upload course media" ON storage.objects;
+DROP POLICY IF EXISTS "Public can read course media" ON storage.objects;
+DROP POLICY IF EXISTS "Admins can delete course media" ON storage.objects;
+
 -- Allow authenticated admins to upload
 CREATE POLICY "Admins can upload course media"
 ON storage.objects FOR INSERT
@@ -49,6 +66,11 @@ USING (
 );
 
 -- Set up RLS policies for course-videos bucket
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Admins can upload course videos" ON storage.objects;
+DROP POLICY IF EXISTS "Public can read course videos" ON storage.objects;
+DROP POLICY IF EXISTS "Admins can delete course videos" ON storage.objects;
+
 CREATE POLICY "Admins can upload course videos"
 ON storage.objects FOR INSERT
 TO authenticated
