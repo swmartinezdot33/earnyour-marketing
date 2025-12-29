@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
       // Update existing user to admin
       const { data: updatedUser, error: updateError } = await client
         .from("users")
-        .update({ role: "admin" })
+        .update({ role: "admin" as const })
         .eq("id", existingUser.id)
         .select()
         .single();
