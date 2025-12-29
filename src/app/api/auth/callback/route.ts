@@ -6,11 +6,22 @@ import { getOrCreateUser } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
   try {
-    const searchParams = request.nextUrl.searchParams;
-    const token = searchParams.get("token");
-    const type = searchParams.get("type");
+    const url = new URL(request.url);
+    const searchParams = url.searchParams;
+    
+    // Supabase can send tokens as query params or hash fragments
+    // Check query params first
+    let token = searchParams.get("token") || searchParams.get("access_token");
+    let type = searchParams.get("type");
+    
+    // If no token in query, check hash fragment (Supabase client-side auth)
+    if (!token && url.hash) {
+      const hashParams = new URLSearchParams(url.hash.substring(1));
+      token = hashParams.get("access_token");
+      type = hashParams.get("type") || "magiclink";
+    }
 
-    if (!token || type !== "magiclink") {
+    if (!token) {
       return NextResponse.redirect(new URL("/login?error=invalid_token", request.url));
     }
 
@@ -26,18 +37,34 @@ export async function GET(request: NextRequest) {
       }
     );
 
-    // Verify OTP token
-    const { data: otpData, error: otpError } = await supabaseAdmin.auth.verifyOtp({
-      token_hash: token,
-      type: "magiclink",
-    });
+    // If we have an access_token from hash fragment, exchange it for user
+    let user;
+    if (token.startsWith("eyJ")) {
+      // This is a JWT access token, not an OTP token
+      // Get user from the token
+      const { data: { user: tokenUser }, error: userError } = await supabaseAdmin.auth.getUser(token);
+      
+      if (userError || !tokenUser) {
+        console.error("Token user error:", userError);
+        return NextResponse.redirect(new URL("/login?error=verification_failed", request.url));
+      }
+      
+      user = tokenUser;
+    } else {
+      // This is an OTP token hash, verify it
+      const { data: otpData, error: otpError } = await supabaseAdmin.auth.verifyOtp({
+        token_hash: token,
+        type: type === "magiclink" ? "magiclink" : "email",
+      });
 
-    if (otpError || !otpData.user) {
-      console.error("Token verification error:", otpError);
-      return NextResponse.redirect(new URL("/login?error=verification_failed", request.url));
+      if (otpError || !otpData.user) {
+        console.error("Token verification error:", otpError);
+        return NextResponse.redirect(new URL("/login?error=verification_failed", request.url));
+      }
+
+      user = otpData.user;
     }
 
-    const user = otpData.user;
 
     if (!user.email) {
       console.error("User email is missing");

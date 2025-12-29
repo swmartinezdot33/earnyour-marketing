@@ -36,12 +36,12 @@ export async function POST(request: NextRequest) {
       }
     );
 
-    // Determine redirect URL after login
-    const redirectUrl = process.env.NEXT_PUBLIC_APP_URL || 
-                        (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ||
-                        "http://localhost:3000";
+    // Determine redirect URL after login - must be absolute URL
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
+                    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ||
+                    "http://localhost:3000";
     
-    const redirectTo = `${redirectUrl}/api/auth/callback`;
+    const redirectTo = `${baseUrl}/api/auth/callback`;
 
     // Send magic link using Supabase Auth
     const { data, error } = await supabase.auth.signInWithOtp({
