@@ -66,8 +66,10 @@ export async function GET(
     // Calculate analytics
     const totalEnrollments = enrollmentsData.length;
     const activeEnrollments = enrollmentsData.filter((e) => !e.completed_at).length;
-    const totalRevenue = purchasesData.reduce((sum, p) => sum + (p.amount_paid || 0), 0);
-    const totalSales = purchasesData.length;
+    const totalRevenue = purchasesData
+      .filter((p) => p.status === "completed")
+      .reduce((sum, p) => sum + (p.amount || 0), 0);
+    const totalSales = purchasesData.filter((p) => p.status === "completed").length;
 
     // Calculate completion rates
     const completedProgress = progressData.filter((p) => p.completed).length;
