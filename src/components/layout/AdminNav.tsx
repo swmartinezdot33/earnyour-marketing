@@ -11,6 +11,7 @@ import {
   FileText,
   Settings,
 } from "lucide-react";
+import { Logo } from "@/components/brand/Logo";
 
 const navItems = [
   {
@@ -55,8 +56,16 @@ export function AdminNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="space-y-1">
-      {navItems.map((item) => {
+    <nav className="space-y-6">
+      {/* Logo at top of sidebar */}
+      <div className="pb-4 border-b">
+        <Link href="/admin/dashboard">
+          <Logo className="justify-start" />
+        </Link>
+      </div>
+      
+      <div className="space-y-1">
+        {navItems.map((item) => {
         const Icon = item.icon;
         const isActive = pathname === item.href || pathname?.startsWith(item.href + "/");
         const hasChildren = item.children && item.children.length > 0;
@@ -99,6 +108,7 @@ export function AdminNav() {
           </div>
         );
       })}
+      </div>
     </nav>
   );
 }

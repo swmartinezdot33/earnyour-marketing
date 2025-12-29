@@ -7,6 +7,7 @@ import { deleteSession } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { LogOut, User } from "lucide-react";
 import Link from "next/link";
+import { Logo } from "@/components/brand/Logo";
 
 export const metadata: Metadata = {
   title: "Dashboard | EarnYour Marketing",
@@ -55,9 +56,10 @@ export default async function DashboardLayout({
         <Container>
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-6">
-              <Link href="/dashboard" className="text-xl font-bold text-brand-navy">
-                Dashboard
+              <Link href="/dashboard">
+                <Logo />
               </Link>
+              <span className="text-sm text-muted-foreground font-medium">Student Portal</span>
             </div>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">

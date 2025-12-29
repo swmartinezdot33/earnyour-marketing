@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { BookOpen, Settings, CreditCard, Home } from "lucide-react";
+import { Logo } from "@/components/brand/Logo";
 
 const navItems = [
   { title: "Dashboard", href: "/dashboard", icon: Home },
@@ -16,8 +17,16 @@ export function StudentNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="space-y-2">
-      {navItems.map((item) => {
+    <nav className="space-y-6">
+      {/* Logo at top of sidebar */}
+      <div className="pb-4 border-b">
+        <Link href="/dashboard">
+          <Logo className="justify-start" />
+        </Link>
+      </div>
+      
+      <div className="space-y-2">
+        {navItems.map((item) => {
         const Icon = item.icon;
         const isActive = pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href));
         
@@ -37,6 +46,7 @@ export function StudentNav() {
           </Link>
         );
       })}
+      </div>
     </nav>
   );
 }
