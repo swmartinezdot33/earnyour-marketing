@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { getSupabaseClient } from "@/lib/db/courses";
-import type { Module, Lesson } from "@/lib/db/schema";
+import type { Course, Module, Lesson } from "@/lib/db/schema";
 
 export async function GET(
   request: NextRequest,
@@ -24,6 +24,7 @@ export async function GET(
       .single();
 
     if (courseError) throw courseError;
+    const courseData = course as Course;
 
     // Get modules
     const { data: modules, error: modulesError } = await client
@@ -76,7 +77,7 @@ export async function GET(
       version: "1.0",
       exportedAt: new Date().toISOString(),
       course: {
-        ...course,
+        ...courseData,
         modules: modulesWithLessons,
       },
     };
