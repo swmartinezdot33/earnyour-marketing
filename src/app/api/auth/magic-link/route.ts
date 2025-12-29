@@ -50,19 +50,20 @@ export async function POST(request: NextRequest) {
         }
       }
       
+      // Always return error details in production for debugging
+      const errorDetails = userError instanceof Error ? {
+        message: userError.message,
+        code: (userError as any).code || null,
+        hint: (userError as any).hint || null,
+        details: (userError as any).details || null,
+      } : { message: String(userError) };
+
       return NextResponse.json(
         {
           success: false,
           error: errorMessage,
           code: errorCode,
-          details: process.env.NODE_ENV === "development" 
-            ? (userError instanceof Error ? {
-                message: userError.message,
-                code: (userError as any).code,
-                hint: (userError as any).hint,
-                stack: userError.stack,
-              } : String(userError))
-            : undefined,
+          details: errorDetails,
         },
         { status: 500 }
       );
