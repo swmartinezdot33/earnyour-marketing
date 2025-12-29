@@ -35,12 +35,34 @@ export async function POST(request: NextRequest) {
       user = await getOrCreateUser(email);
     } catch (userError) {
       console.error("Error getting/creating user:", userError);
-      const errorMessage = userError instanceof Error ? userError.message : "Failed to get or create user";
+      
+      let errorMessage = "Failed to get or create user";
+      let errorCode = null;
+      
+      if (userError instanceof Error) {
+        errorMessage = userError.message;
+        // Check for specific Supabase errors
+        if (userError.message.includes("column") && userError.message.includes("does not exist")) {
+          errorMessage = "Database schema error. The 'status' column may be missing. Please run migration 004_user_status.sql in Supabase.";
+          errorCode = "MISSING_COLUMN";
+        } else if (userError.message.includes("PGRST")) {
+          errorCode = (userError as any).code;
+        }
+      }
+      
       return NextResponse.json(
         {
           success: false,
-          error: `Database error: ${errorMessage}`,
-          details: process.env.NODE_ENV === "development" ? (userError instanceof Error ? userError.stack : String(userError)) : undefined,
+          error: errorMessage,
+          code: errorCode,
+          details: process.env.NODE_ENV === "development" 
+            ? (userError instanceof Error ? {
+                message: userError.message,
+                code: (userError as any).code,
+                hint: (userError as any).hint,
+                stack: userError.stack,
+              } : String(userError))
+            : undefined,
         },
         { status: 500 }
       );
