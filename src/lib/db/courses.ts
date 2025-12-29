@@ -111,6 +111,18 @@ export async function createModule(module: Omit<Module, "id" | "created_at" | "u
   return data as Module;
 }
 
+export async function updateModule(id: string, updates: Partial<Module>) {
+  const client = getSupabaseClient();
+  const { data, error } = await (client.from("modules") as any)
+    .update({ ...updates, updated_at: new Date().toISOString() })
+    .eq("id", id)
+    .select()
+    .single();
+  
+  if (error) throw error;
+  return data as Module;
+}
+
 // Lesson operations
 export async function getLessonsByModuleId(moduleId: string) {
   const client = getSupabaseClient();
@@ -152,6 +164,18 @@ export async function createLesson(lesson: Omit<Lesson, "id" | "created_at" | "u
   const client = getSupabaseClient();
   const { data, error } = await (client.from("lessons") as any)
     .insert([lesson])
+    .select()
+    .single();
+  
+  if (error) throw error;
+  return data as Lesson;
+}
+
+export async function updateLesson(id: string, updates: Partial<Lesson>) {
+  const client = getSupabaseClient();
+  const { data, error } = await (client.from("lessons") as any)
+    .update({ ...updates, updated_at: new Date().toISOString() })
+    .eq("id", id)
     .select()
     .single();
   

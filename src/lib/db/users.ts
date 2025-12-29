@@ -36,7 +36,6 @@ export async function createUser(user: Omit<User, "id" | "created_at" | "updated
     status: user.status || "active",
   };
   const { data, error } = await (client.from("users") as any)
-    .from("users")
     .insert([userData])
     .select()
     .single();

@@ -53,37 +53,72 @@ export function LessonPlayer({ lesson, content, progress, userId, courseSlug }: 
       {/* Video Player */}
       {lesson.content_type === "video" && content.video_url && (
         <div className="aspect-video bg-black rounded-lg overflow-hidden">
-          <video
-            ref={videoRef}
-            src={content.video_url}
-            controls
-            className="w-full h-full"
-            onTimeUpdate={() => {
-              if (videoRef.current) {
-                const video = videoRef.current;
-                const progress = (video.currentTime / video.duration) * 100;
-                fetch(`/api/lessons/${lesson.id}/progress`, {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    progress_percentage: Math.round(progress),
-                    last_position: Math.round(video.currentTime),
-                  }),
-                }).catch(console.error);
-              }
-            }}
-            onLoadedMetadata={() => {
-              // Resume from last position
-              if (progress?.last_position && videoRef.current) {
-                videoRef.current.currentTime = progress.last_position;
-              }
-            }}
-          />
+          {content.video_provider === "youtube" ? (
+            <iframe
+              src={(() => {
+                const url = content.video_url;
+                if (url.includes("youtube.com/watch?v=")) {
+                  return url.replace("watch?v=", "embed/");
+                }
+                if (url.includes("youtu.be/")) {
+                  return `https://www.youtube.com/embed/${url.split("youtu.be/")[1].split("?")[0]}`;
+                }
+                if (url.includes("youtube.com/embed/")) {
+                  return url;
+                }
+                return url;
+              })()}
+              className="w-full h-full"
+              allowFullScreen
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            />
+          ) : content.video_provider === "vimeo" ? (
+            <iframe
+              src={`https://player.vimeo.com/video/${content.video_url.split("/").pop()?.split("?")[0]}`}
+              className="w-full h-full"
+              allowFullScreen
+              allow="autoplay; fullscreen; picture-in-picture"
+            />
+          ) : (
+            <video
+              ref={videoRef}
+              src={content.video_url}
+              controls
+              className="w-full h-full"
+              onTimeUpdate={() => {
+                if (videoRef.current) {
+                  const video = videoRef.current;
+                  const progress = (video.currentTime / video.duration) * 100;
+                  fetch(`/api/lessons/${lesson.id}/progress`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      progress_percentage: Math.round(progress),
+                      last_position: Math.round(video.currentTime),
+                    }),
+                  }).catch(console.error);
+                }
+              }}
+              onLoadedMetadata={() => {
+                // Resume from last position
+                if (progress?.last_position && videoRef.current) {
+                  videoRef.current.currentTime = progress.last_position;
+                }
+              }}
+            />
+          )}
         </div>
       )}
 
       {/* Text Content */}
-      {lesson.content_type === "text" && (
+      {lesson.content_type === "text" && content.content && (
+        <div className="prose prose-lg max-w-none">
+          <div dangerouslySetInnerHTML={{ __html: content.content }} />
+        </div>
+      )}
+
+      {/* Rich Content (for any content type) */}
+      {content.content && lesson.content_type !== "text" && (
         <div className="prose prose-lg max-w-none">
           <div dangerouslySetInnerHTML={{ __html: content.content }} />
         </div>

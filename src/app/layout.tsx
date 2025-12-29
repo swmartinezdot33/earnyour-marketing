@@ -8,6 +8,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { StickyMobileCTA } from "@/components/layout/StickyMobileCTA";
 import { constructLocalBusinessSchema } from "@/lib/seo";
+import { ToastContainer } from "@/components/ui/toast";
 
 // Fallback fonts from Google
 const oswald = Oswald({
@@ -93,9 +94,10 @@ export default function RootLayout({
         <main className="flex-1">
           {children}
         </main>
-        <Footer />
-        <StickyMobileCTA />
-      </body>
-    </html>
-  );
-}
+                <Footer />
+                <StickyMobileCTA />
+                <ToastContainer />
+              </body>
+            </html>
+          );
+        }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { VisualCourseBuilder } from "./VisualCourseBuilder";
 import { CourseMetadata } from "./CourseMetadata";
 import { ModuleEditor } from "./ModuleEditor";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -73,39 +74,13 @@ export function CourseBuilder({ courseId, initialCourse, onUpdate }: CourseBuild
     fetchModules();
   };
 
+  // Use the new VisualCourseBuilder for a modern, professional interface
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-4xl font-bold font-heading text-brand-navy mb-2">
-          {course.title}
-        </h1>
-        <p className="text-muted-foreground">Build and organize your course content</p>
-      </div>
-
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-2 lg:w-auto">
-          <TabsTrigger value="overview">Course Overview</TabsTrigger>
-          <TabsTrigger value="content">Course Content</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview" className="mt-6">
-          <CourseMetadata
-            course={course}
-            onUpdate={handleCourseUpdate}
-            loading={loading}
-          />
-        </TabsContent>
-
-        <TabsContent value="content" className="mt-6">
-          <ModuleEditor
-            courseId={courseId}
-            courseTitle={course.title}
-            modules={modules}
-            onUpdate={handleModuleUpdate}
-          />
-        </TabsContent>
-      </Tabs>
-    </div>
+    <VisualCourseBuilder
+      courseId={courseId}
+      initialCourse={course}
+      onUpdate={onUpdate}
+    />
   );
 }
 
