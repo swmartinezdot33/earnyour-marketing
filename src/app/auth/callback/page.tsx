@@ -1,14 +1,15 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function AuthCallbackPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
-    // Extract token from hash fragment (Supabase sends tokens in hash)
-    if (window.location.hash) {
+    // Check for hash fragment first (Supabase sends tokens in hash)
+    if (typeof window !== "undefined" && window.location.hash) {
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
       const accessToken = hashParams.get("access_token");
       const type = hashParams.get("type") || "magiclink";
@@ -21,9 +22,19 @@ export default function AuthCallbackPage() {
       }
     }
 
+    // Check for query params (if redirected from API)
+    const token = searchParams.get("access_token") || searchParams.get("token");
+    if (token) {
+      // Already have token, redirect to API route
+      const type = searchParams.get("type") || "magiclink";
+      const callbackUrl = `/api/auth/callback?access_token=${encodeURIComponent(token)}&type=${type}`;
+      window.location.href = callbackUrl;
+      return;
+    }
+
     // No token found, redirect to login
     router.push("/login?error=invalid_token");
-  }, [router]);
+  }, [router, searchParams]);
 
   return (
     <div className="flex items-center justify-center min-h-screen">

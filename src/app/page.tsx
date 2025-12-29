@@ -5,10 +5,12 @@ import { Process } from "@/components/home/Process";
 import { Testimonials } from "@/components/home/Testimonials";
 import { FAQ } from "@/components/home/FAQ";
 import { CTA } from "@/components/home/CTA";
+import { AuthCallbackHandler } from "@/components/auth/AuthCallbackHandler";
 
 export default function Home() {
   return (
     <>
+      <AuthCallbackHandler />
       <Hero />
       <Services />
       <Results />
