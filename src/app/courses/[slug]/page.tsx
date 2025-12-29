@@ -108,7 +108,7 @@ export default async function CoursePage({
           <main className="flex-1 p-8">
             <div className="max-w-4xl mx-auto space-y-6">
               <div className="bg-gradient-to-r from-brand-navy to-brand-navy/80 text-white p-8 rounded-xl">
-                <h1 className="text-4xl md:text-5xl font-bold font-heading mb-6">
+                <h1 className="text-4xl md:text-5xl font-bold font-heading mb-6 text-white">
                   {course.title}
                 </h1>
                 <p className="text-xl text-white/80 mb-8">

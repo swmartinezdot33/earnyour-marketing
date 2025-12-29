@@ -37,12 +37,10 @@ import {
   Edit2,
   Trash2,
   Play,
-  ExternalLink,
   Calendar,
   PlayCircle,
 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import Link from "next/link";
 import { EnhancedLessonEditor } from "./EnhancedLessonEditor";
 
 const CONTENT_TYPES = [
@@ -183,12 +181,16 @@ function SortableLessonItem({
               >
                 {lesson.title}
               </h4>
-              {courseId && !previewMode && (
-                <Link href={`/admin/courses/${courseId}/lessons/${lesson.id}/edit`}>
-                  <Button variant="ghost" size="sm" className="h-8">
-                    <ExternalLink className="h-3 w-3" />
-                  </Button>
-                </Link>
+              {courseId && !previewMode && onEdit && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-8"
+                  onClick={() => onEdit(lesson)}
+                  title="Edit lesson"
+                >
+                  <Edit2 className="h-3 w-3" />
+                </Button>
               )}
             </div>
           )}
