@@ -23,24 +23,31 @@ export async function GET(
 
     if (enrollmentsError) throw enrollmentsError;
 
+    // Get modules for this course
+    const { data: modulesData, error: modulesError } = await client
+      .from("modules")
+      .select("id")
+      .eq("course_id", courseId);
+
+    if (modulesError) throw modulesError;
+
+    const moduleIds = (modulesData || []).map((m: { id: string }) => m.id);
+
+    // Get lessons for these modules
+    const { data: lessonsData, error: lessonsError } = await client
+      .from("lessons")
+      .select("id")
+      .in("module_id", moduleIds);
+
+    if (lessonsError) throw lessonsError;
+
+    const lessonIds = (lessonsData || []).map((l: { id: string }) => l.id);
+
     // Get progress data
     const { data: progress, error: progressError } = await client
       .from("progress")
       .select("*")
-      .in(
-        "lesson_id",
-        (
-          await client
-            .from("lessons")
-            .select("id")
-            .in(
-              "module_id",
-              (
-                await client.from("modules").select("id").eq("course_id", courseId)
-              ).data?.map((m) => m.id) || []
-            )
-        ).data?.map((l) => l.id) || []
-      );
+      .in("lesson_id", lessonIds);
 
     if (progressError) throw progressError;
 
