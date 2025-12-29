@@ -41,7 +41,8 @@ export async function POST(request: NextRequest) {
                     (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ||
                     "http://localhost:3000";
     
-    const redirectTo = `${baseUrl}/api/auth/callback`;
+    // Use the client-side callback page that will extract hash and redirect to API
+    const redirectTo = `${baseUrl}/auth/callback`;
 
     // Send magic link using Supabase Auth
     const { data, error } = await supabase.auth.signInWithOtp({
