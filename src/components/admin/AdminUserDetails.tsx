@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { BookOpen, Receipt, Settings, ExternalLink, User as UserIcon } from "lucide-react";
 import Link from "next/link";
 import type { User, Enrollment } from "@/lib/db/schema";
@@ -148,11 +149,30 @@ export function AdminUserDetails({
               <Settings className="mr-2 h-4 w-4" />
               Edit User
             </Button>
-            <Link href={`/admin/users/${user.id}/ghl`}>
-              <Button variant="outline" size="sm">
-                GHL Details
-              </Button>
-            </Link>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  {user.ghl_contact_id ? (
+                    <Link href={`/admin/users/${user.id}/ghl`}>
+                      <Button variant="outline" size="sm">
+                        More Details
+                      </Button>
+                    </Link>
+                  ) : (
+                    <span>
+                      <Button variant="outline" size="sm" disabled>
+                        More Details
+                      </Button>
+                    </span>
+                  )}
+                </TooltipTrigger>
+                {!user.ghl_contact_id && (
+                  <TooltipContent>
+                    <p>Not associated to CRM contact</p>
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            </TooltipProvider>
           </div>
         </CardContent>
       </Card>

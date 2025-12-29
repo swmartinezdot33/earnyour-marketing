@@ -27,14 +27,18 @@ export const supabase = new Proxy({} as ReturnType<typeof createClient>, {
 }) as ReturnType<typeof createClient>;
 
 // Course operations
-export async function getCourseBySlug(slug: string) {
+export async function getCourseBySlug(slug: string, allowUnpublished = false) {
   const client = getSupabaseClient();
-  const { data, error } = await client
+  let query = client
     .from("courses")
     .select("*")
-    .eq("slug", slug)
-    .eq("published", true)
-    .single();
+    .eq("slug", slug);
+  
+  if (!allowUnpublished) {
+    query = query.eq("published", true);
+  }
+  
+  const { data, error } = await query.single();
   
   if (error) throw error;
   return data as Course;

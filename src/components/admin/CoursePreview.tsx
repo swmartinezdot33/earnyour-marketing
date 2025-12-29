@@ -195,11 +195,17 @@ export function CoursePreview({ courseId, course, modules }: CoursePreviewProps)
 
       {/* Course Actions */}
       <div className="flex justify-center gap-4">
-        <Link href={`/courses/${course.slug}`} target="_blank">
-          <Button size="lg">
+        {course.slug ? (
+          <Link href={course.published ? `/courses/${course.slug}` : `/courses/${course.slug}?preview=true`} target="_blank">
+            <Button size="lg">
+              {course.published ? "View Live Course" : "Preview Course"}
+            </Button>
+          </Link>
+        ) : (
+          <Button size="lg" disabled title="Course needs a slug to be viewable">
             View Live Course
           </Button>
-        </Link>
+        )}
         <Link href={`/admin/courses/${courseId}/builder`}>
           <Button variant="outline" size="lg">
             Back to Builder

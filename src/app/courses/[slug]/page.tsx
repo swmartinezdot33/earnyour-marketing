@@ -12,10 +12,14 @@ import Link from "next/link";
 // Force dynamic rendering since we need Supabase and session data
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: { 
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ preview?: string }>;
+}): Promise<Metadata> {
   const { slug } = await params;
+  const { preview } = await searchParams;
   try {
-    const course = await getCourseBySlug(slug);
+    const course = await getCourseBySlug(slug, preview === "true");
     
     if (!course) {
       return { title: "Course Not Found" };
@@ -30,11 +34,23 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 }
 
-export default async function CoursePage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function CoursePage({ 
+  params,
+  searchParams 
+}: { 
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ preview?: string }>;
+}) {
   const { slug } = await params;
+  const { preview } = await searchParams;
+  const session = await getSession();
+  
+  // Only allow preview mode for admins
+  const allowPreview = preview === "true" && session?.role === "admin";
+  
   let course;
   try {
-    course = await getCourseBySlug(slug);
+    course = await getCourseBySlug(slug, allowPreview);
   } catch (error) {
     console.error("Error fetching course:", error);
     notFound();
@@ -44,9 +60,8 @@ export default async function CoursePage({ params }: { params: Promise<{ slug: s
     notFound();
   }
   
-  const session = await getSession();
-  
-  if (!course) {
+  // If course is unpublished and not in preview mode, show 404
+  if (!course.published && !allowPreview) {
     notFound();
   }
 
