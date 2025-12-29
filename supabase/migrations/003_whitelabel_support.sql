@@ -41,6 +41,11 @@ ALTER TABLE whitelabel_accounts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE whitelabel_user_assignments ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for whitelabel_accounts
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Owners can manage their whitelabel accounts" ON whitelabel_accounts;
+DROP POLICY IF EXISTS "Users can view their assigned whitelabel account" ON whitelabel_accounts;
+DROP POLICY IF EXISTS "Users can view their whitelabel assignment" ON whitelabel_user_assignments;
+
 -- Owners can view and manage their own whitelabel accounts
 CREATE POLICY "Owners can manage their whitelabel accounts"
   ON whitelabel_accounts FOR ALL
@@ -70,6 +75,9 @@ CREATE POLICY "Users can view their assigned whitelabel account"
   );
 
 -- RLS Policies for whitelabel_user_assignments
+-- Drop existing policy if it exists
+DROP POLICY IF EXISTS "Users can view their own whitelabel assignments" ON whitelabel_user_assignments;
+
 -- Users can view their own assignments
 CREATE POLICY "Users can view their own whitelabel assignments"
   ON whitelabel_user_assignments FOR SELECT
@@ -81,6 +89,9 @@ CREATE POLICY "Users can view their own whitelabel assignments"
       AND users.role = 'admin'
     )
   );
+
+-- Drop existing policy if it exists
+DROP POLICY IF EXISTS "Admins and owners can manage whitelabel assignments" ON whitelabel_user_assignments;
 
 -- Admins and whitelabel owners can manage assignments
 CREATE POLICY "Admins and owners can manage whitelabel assignments"
