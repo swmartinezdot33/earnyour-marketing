@@ -43,20 +43,6 @@ export function VisualCourseBuilder({ courseId, initialCourse, onUpdate }: Visua
     }
   };
 
-  const fetchModules = async () => {
-    if (!courseId) return;
-    
-    try {
-      const response = await fetch(`/api/admin/courses/${courseId}/modules`);
-      const data = await response.json();
-      if (data.success) {
-        setModules(data.modules);
-      }
-    } catch (error) {
-      console.error("Error fetching modules:", error);
-    }
-  };
-
   const handleCourseUpdate = async (updates: any) => {
     if (!courseId) {
       console.error("Cannot update course: courseId is undefined");
