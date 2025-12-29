@@ -45,7 +45,7 @@ export interface Lesson {
   module_id: string;
   title: string;
   description: string | null;
-  content_type: "video" | "text" | "quiz" | "download";
+  content_type: "video" | "text" | "quiz" | "download" | "interactive_video" | "live_session";
   order: number;
   duration_minutes: number | null;
   created_at: string;
@@ -55,11 +55,13 @@ export interface Lesson {
 export interface LessonContent {
   id: string;
   lesson_id: string;
-  content: string; // JSON string for rich content
+  content: string; // Rich text content
   video_url: string | null;
   video_provider: "youtube" | "vimeo" | "mux" | "custom" | null;
-  quiz_data: string | null; // JSON string for quiz questions
+  video_interactions: string | null; // JSON: timestamps, bookmarks, popups
+  quiz_data: string | null; // JSON: questions, settings, answers
   download_url: string | null;
+  live_session_data: string | null; // JSON: date, time, meeting_link, recording_url
   created_at: string;
   updated_at: string;
 }

@@ -41,12 +41,16 @@ import {
 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Link from "next/link";
+import { EnhancedLessonEditor } from "./EnhancedLessonEditor";
+import { EnhancedLessonEditor } from "./EnhancedLessonEditor";
 
 const CONTENT_TYPES = [
   { value: "video", label: "Video", icon: Video, color: "text-red-500" },
   { value: "text", label: "Text", icon: FileText, color: "text-blue-500" },
   { value: "quiz", label: "Quiz", icon: HelpCircle, color: "text-purple-500" },
   { value: "download", label: "Download", icon: Download, color: "text-green-500" },
+  { value: "interactive_video", label: "Interactive Video", icon: PlayCircle, color: "text-orange-500" },
+  { value: "live_session", label: "Live Session", icon: Calendar, color: "text-pink-500" },
 ];
 
 interface VisualLessonEditorProps {
@@ -213,7 +217,7 @@ function SortableLessonItem({
           )}
 
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span className="capitalize">{lesson.content_type}</span>
+            <span className="capitalize">{lesson.content_type.replace("_", " ")}</span>
             {lesson.duration_minutes && (
               <>
                 <span>•</span>
@@ -225,6 +229,16 @@ function SortableLessonItem({
 
         {!previewMode && (
           <div className="flex items-center gap-2">
+            {onEdit && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onEdit(lesson)}
+                title="Edit lesson"
+              >
+                <Edit2 className="h-4 w-4" />
+              </Button>
+            )}
             <Button
               variant="ghost"
               size="sm"
@@ -253,8 +267,10 @@ export function VisualLessonEditor({
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    content_type: "video" as "video" | "text" | "quiz" | "download",
+    content_type: "video" as "video" | "text" | "quiz" | "download" | "interactive_video" | "live_session",
   });
+  const [editingLesson, setEditingLesson] = useState<any>(null);
+  const [lessonContent, setLessonContent] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [aiGenerating, setAiGenerating] = useState(false);
   const [selectedLessons, setSelectedLessons] = useState<Set<string>>(new Set());
@@ -440,6 +456,27 @@ export function VisualLessonEditor({
     }
   };
 
+  const handleEditLesson = async (lesson: any) => {
+    setEditingLesson(lesson);
+    // Fetch lesson content
+    try {
+      const response = await fetch(`/api/admin/lessons/${lesson.id}/content`);
+      const data = await response.json();
+      if (data.success) {
+        setLessonContent(data.content);
+      }
+    } catch (error) {
+      console.error("Error fetching lesson content:", error);
+      setLessonContent(null);
+    }
+  };
+
+  const handleCloseEditor = () => {
+    setEditingLesson(null);
+    setLessonContent(null);
+    onUpdate();
+  };
+
   return (
     <div className="space-y-4">
       {!previewMode && (
@@ -591,6 +628,7 @@ export function VisualLessonEditor({
                     selected={selectedLessons.has(lesson.id)}
                     onSelect={handleSelectLesson}
                     bulkMode={bulkMode}
+                    onEdit={handleEditLesson}
                   />
                 </div>
               ))
@@ -598,6 +636,17 @@ export function VisualLessonEditor({
           </div>
         </SortableContext>
       </DndContext>
+
+      {editingLesson && courseId && (
+        <EnhancedLessonEditor
+          lesson={editingLesson}
+          content={lessonContent}
+          courseId={courseId}
+          open={!!editingLesson}
+          onClose={handleCloseEditor}
+          onUpdate={handleCloseEditor}
+        />
+      )}
     </div>
   );
 }

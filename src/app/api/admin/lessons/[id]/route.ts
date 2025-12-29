@@ -6,7 +6,8 @@ import { z } from "zod";
 const updateLessonSchema = z.object({
   title: z.string().min(1).optional(),
   description: z.string().optional().nullable(),
-  content_type: z.enum(["video", "text", "quiz", "download"]).optional(),
+  content_type: z.enum(["video", "text", "quiz", "download", "interactive_video", "live_session"]).optional(),
+  duration_minutes: z.number().nullable().optional(),
 });
 
 export async function PATCH(
@@ -26,7 +27,12 @@ export async function PATCH(
     const updates: any = {};
     if (validated.title !== undefined) updates.title = validated.title;
     if (validated.description !== undefined) updates.description = validated.description || null;
-    if (validated.content_type !== undefined) updates.content_type = validated.content_type;
+    if (validated.content_type !== undefined) {
+      updates.content_type = validated.content_type;
+      // When content type changes, we may need to migrate content
+      // This will be handled by the frontend when saving content
+    }
+    if (validated.duration_minutes !== undefined) updates.duration_minutes = validated.duration_minutes;
 
     const lesson = await updateLesson(id, updates);
 

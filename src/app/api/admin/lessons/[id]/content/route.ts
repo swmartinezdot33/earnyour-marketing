@@ -8,7 +8,10 @@ const contentSchema = z.object({
   content: z.string().optional(),
   video_url: z.string().url().optional().nullable(),
   video_provider: z.enum(["youtube", "vimeo", "mux", "custom"]).optional().nullable(),
+  video_interactions: z.string().optional().nullable(),
+  quiz_data: z.string().optional().nullable(),
   download_url: z.string().url().optional().nullable(),
+  live_session_data: z.string().optional().nullable(),
 });
 
 export async function GET(
@@ -78,7 +81,10 @@ export async function POST(
           content: validated.content || "",
           video_url: validated.video_url || null,
           video_provider: validated.video_provider || null,
+          video_interactions: validated.video_interactions || null,
+          quiz_data: validated.quiz_data || null,
           download_url: validated.download_url || null,
+          live_session_data: validated.live_session_data || null,
         },
       ])
       .select()
@@ -122,7 +128,10 @@ export async function PATCH(
     if (validated.content !== undefined) updates.content = validated.content;
     if (validated.video_url !== undefined) updates.video_url = validated.video_url;
     if (validated.video_provider !== undefined) updates.video_provider = validated.video_provider;
+    if (validated.video_interactions !== undefined) updates.video_interactions = validated.video_interactions;
+    if (validated.quiz_data !== undefined) updates.quiz_data = validated.quiz_data;
     if (validated.download_url !== undefined) updates.download_url = validated.download_url;
+    if (validated.live_session_data !== undefined) updates.live_session_data = validated.live_session_data;
 
     // Check if content exists
     const { data: existing } = await client
@@ -143,16 +152,19 @@ export async function PATCH(
       return NextResponse.json({ success: true, content: data });
     } else {
       // Create new
+      const insertData: any = {
+        lesson_id: lessonId,
+        content: validated.content || "",
+        video_url: validated.video_url || null,
+        video_provider: validated.video_provider || null,
+        video_interactions: validated.video_interactions || null,
+        quiz_data: validated.quiz_data || null,
+        download_url: validated.download_url || null,
+        live_session_data: validated.live_session_data || null,
+      };
+
       const { data, error } = await (client.from("lesson_content") as any)
-        .insert([
-          {
-            lesson_id: lessonId,
-            content: validated.content || "",
-            video_url: validated.video_url || null,
-            video_provider: validated.video_provider || null,
-            download_url: validated.download_url || null,
-          },
-        ])
+        .insert([insertData])
         .select()
         .single();
 

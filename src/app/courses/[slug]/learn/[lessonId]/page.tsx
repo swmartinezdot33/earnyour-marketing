@@ -5,8 +5,6 @@ import { notFound, redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { checkCourseAccessBySlug } from "@/lib/auth/course-access";
 import { getLessonProgress, updateLessonProgress } from "@/lib/db/progress";
-import { Container } from "@/components/layout/Container";
-import { Section } from "@/components/layout/Section";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -55,38 +53,36 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
   const progress = await getLessonProgress(session.userId, lessonId);
 
   return (
-    <Section className="pt-24 pb-16">
-      <Container>
-        <div className="mb-6">
-          <Link href={`/courses/${slug}/learn`}>
-            <Button variant="ghost" className="mb-4">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Course
-            </Button>
-          </Link>
-          <h1 className="text-3xl font-bold font-heading text-brand-navy mb-2">
-            {lesson.title}
-          </h1>
-          {lesson.description && (
-            <p className="text-muted-foreground">{lesson.description}</p>
-          )}
-        </div>
+    <div className="space-y-6">
+      <div className="mb-6">
+        <Link href={`/courses/${slug}/learn`}>
+          <Button variant="ghost" className="mb-4">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Course
+          </Button>
+        </Link>
+        <h1 className="text-3xl font-bold font-heading text-brand-navy mb-2">
+          {lesson.title}
+        </h1>
+        {lesson.description && (
+          <p className="text-muted-foreground">{lesson.description}</p>
+        )}
+      </div>
 
-        <div className="max-w-4xl mx-auto">
-          <Card>
-            <CardContent className="p-6">
-              <LessonPlayer
-                lesson={lesson}
-                content={content}
-                progress={progress}
-                userId={session.userId}
-                courseSlug={slug}
-              />
-            </CardContent>
-          </Card>
-        </div>
-      </Container>
-    </Section>
+      <div className="max-w-4xl mx-auto">
+        <Card>
+          <CardContent className="p-6">
+            <LessonPlayer
+              lesson={lesson}
+              content={content}
+              progress={progress}
+              userId={session.userId}
+              courseSlug={slug}
+            />
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 }
 

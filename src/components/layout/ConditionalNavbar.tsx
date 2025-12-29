@@ -8,8 +8,16 @@ import { StickyMobileCTA } from "./StickyMobileCTA";
 export function ConditionalNavbar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   
-  // Hide navbar and footer for admin and dashboard routes
-  const hideNavbar = pathname?.startsWith("/admin") || pathname?.startsWith("/dashboard");
+  // Hide navbar and footer for all backend/portal routes:
+  // - Admin routes (/admin/*)
+  // - Student dashboard routes (/dashboard/*)
+  // - Course learning routes (/courses/*/learn/*) - authenticated student portal
+  // - Login page (has its own layout)
+  const hideNavbar = 
+    pathname?.startsWith("/admin") || 
+    pathname?.startsWith("/dashboard") ||
+    pathname?.includes("/learn") ||
+    pathname === "/login";
   
   return (
     <>
