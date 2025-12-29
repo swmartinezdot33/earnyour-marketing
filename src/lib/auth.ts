@@ -72,14 +72,13 @@ export async function getOrCreateUser(email: string, name?: string) {
       email: email.toLowerCase(),
       name: name || null,
       role: "student",
+      status: "active",
+      deleted_at: null,
+      // GHL fields are optional and will default to null in database
       ghl_contact_id: null,
       ghl_location_id: null,
       whitelabel_id: null,
-      status: "active",
-      deleted_at: null,
     });
-    
-    // GHL integration removed - no longer syncing users to GHL
   }
   return user;
 }

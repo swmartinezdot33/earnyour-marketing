@@ -29,11 +29,18 @@ export async function findContactByEmail(email: string) {
   return getUserByEmail(email);
 }
 
-export async function createUser(user: Omit<User, "id" | "created_at" | "updated_at">) {
+export async function createUser(user: Partial<Omit<User, "id" | "created_at" | "updated_at">> & { email: string; role: "admin" | "student" }) {
   const client = getSupabaseClient();
   const userData = {
-    ...user,
+    email: user.email.toLowerCase(),
+    name: user.name || null,
+    role: user.role,
     status: user.status || "active",
+    deleted_at: user.deleted_at || null,
+    // GHL fields are optional - only include if provided
+    ...(user.ghl_contact_id !== undefined && { ghl_contact_id: user.ghl_contact_id }),
+    ...(user.ghl_location_id !== undefined && { ghl_location_id: user.ghl_location_id }),
+    ...(user.whitelabel_id !== undefined && { whitelabel_id: user.whitelabel_id }),
   };
   const { data, error } = await (client.from("users") as any)
     .insert([userData])
