@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Save, X, Video, FileText, HelpCircle, Download, Calendar, PlayCircle } from "lucide-react";
+import { Loader2, Save, X, Video, FileText, HelpCircle, Download, Calendar, PlayCircle, Upload } from "lucide-react";
 import { QuizBuilder } from "./QuizBuilder";
 import { InteractiveVideoEditor } from "./InteractiveVideoEditor";
 import { showToast } from "@/components/ui/toast";
@@ -66,6 +66,9 @@ export function EnhancedLessonEditor({
   const [sessionTime, setSessionTime] = useState("");
   const [meetingLink, setMeetingLink] = useState("");
   const [recordingLink, setRecordingLink] = useState("");
+  
+  // Upload state
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (lesson) {
@@ -109,6 +112,41 @@ export function EnhancedLessonEditor({
   const handleVideoUrlChange = (url: string) => {
     setVideoUrl(url);
     setVideoProvider(detectVideoProvider(url));
+  };
+
+  const handleFileUpload = async (file: File, type: "image" | "video" | "document") => {
+    setUploading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("type", type);
+      formData.append("lessonId", lesson.id);
+
+      const response = await fetch("/api/admin/media/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        if (type === "document") {
+          setDownloadUrl(data.url);
+          showToast("File uploaded successfully!", "success");
+        } else if (type === "video") {
+          setVideoUrl(data.url);
+          setVideoProvider(detectVideoProvider(data.url));
+          showToast("Video uploaded successfully!", "success");
+        }
+      } else {
+        showToast(data.error || "Failed to upload file", "error");
+      }
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      showToast("Failed to upload file. Please try again.", "error");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSave = async () => {
@@ -432,7 +470,37 @@ export function EnhancedLessonEditor({
             {contentType === "download" && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Downloadable Resource</CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle>Downloadable Resource</CardTitle>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => document.getElementById("document-upload")?.click()}
+                      disabled={uploading}
+                    >
+                      {uploading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Uploading...
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="mr-2 h-4 w-4" />
+                          Upload File
+                        </>
+                      )}
+                    </Button>
+                    <input
+                      id="document-upload"
+                      type="file"
+                      accept=".pdf,.doc,.docx,.txt,.xls,.xlsx"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleFileUpload(file, "document");
+                      }}
+                    />
+                  </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
@@ -441,12 +509,42 @@ export function EnhancedLessonEditor({
                       id="download-url"
                       value={downloadUrl}
                       onChange={(e) => setDownloadUrl(e.target.value)}
-                      placeholder="https://... or upload a file"
+                      placeholder="https://... or upload a file above"
                     />
                     <p className="text-xs text-muted-foreground">
-                      Enter a direct download link or upload a file (PDF, DOCX, etc.)
+                      Enter a direct download link or upload a file (PDF, DOCX, XLSX, TXT, etc.)
                     </p>
                   </div>
+
+                  {downloadUrl && (
+                    <div className="p-4 bg-muted rounded-lg flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <FileText className="h-4 w-4" />
+                        <div className="flex-1 min-w-0">
+                          <span className="text-sm font-medium block truncate">
+                            {downloadUrl.includes("http") ? "Download available" : "File uploaded"}
+                          </span>
+                          {downloadUrl.includes("http") && (
+                            <a
+                              href={downloadUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs text-primary hover:underline truncate block"
+                            >
+                              {downloadUrl}
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setDownloadUrl("")}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}
