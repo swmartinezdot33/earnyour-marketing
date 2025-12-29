@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { Suspense } from "react";
 import { Oswald, Inter } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
@@ -88,9 +89,11 @@ export default function RootLayout({
             __html: JSON.stringify(constructLocalBusinessSchema()),
           }}
         />
-        <ConditionalNavbar>
-          {children}
-        </ConditionalNavbar>
+        <Suspense fallback={<>{children}</>}>
+          <ConditionalNavbar>
+            {children}
+          </ConditionalNavbar>
+        </Suspense>
         <ToastContainer />
       </body>
     </html>
