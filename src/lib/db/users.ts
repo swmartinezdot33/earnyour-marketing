@@ -54,7 +54,6 @@ export async function createUser(user: Partial<Omit<User, "id" | "created_at" | 
 export async function updateUser(userId: string, updates: Partial<User>) {
   const client = getSupabaseClient();
   const { data, error } = await (client.from("users") as any)
-    .from("users")
     .update({ ...updates, updated_at: new Date().toISOString() })
     .eq("id", userId)
     .select()

@@ -5,6 +5,8 @@ import { CourseMetadata } from "./CourseMetadata";
 import { VisualModuleEditor } from "./VisualModuleEditor";
 import { CoursePreview } from "./CoursePreview";
 import { CourseAnalytics } from "./CourseAnalytics";
+import { StripeProductSelector } from "./StripeProductSelector";
+import { StripeWarningBanner } from "./StripeWarningBanner";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -80,6 +82,9 @@ export function VisualCourseBuilder({ courseId, initialCourse, onUpdate }: Visua
 
   return (
     <div className="space-y-6">
+      {/* Stripe Warning Banner */}
+      <StripeWarningBanner />
+
       {/* Header */}
       <div className="flex items-start justify-between">
         <div className="flex-1">
@@ -141,7 +146,33 @@ export function VisualCourseBuilder({ courseId, initialCourse, onUpdate }: Visua
                       <Button
                         variant={course.published ? "default" : "outline"}
                         size="sm"
-                        onClick={() => handleCourseUpdate({ published: !course.published })}
+                        onClick={async () => {
+                          // Check Stripe before publishing
+                          if (!course.published) {
+                            try {
+                              const response = await fetch("/api/admin/stripe/status");
+                              const data = await response.json();
+                              
+                              let warningMessage = "";
+                              if (!data.configured) {
+                                warningMessage = "Stripe is not configured. Courses cannot accept payments.";
+                              } else if (!course.stripe_product_id) {
+                                warningMessage = "This course is not linked to a Stripe product. Students won't be able to purchase it.";
+                              }
+                              
+                              if (warningMessage) {
+                                const confirmed = confirm(
+                                  warningMessage + "\n\n" +
+                                  "Do you want to publish anyway? (Configure in Settings)"
+                                );
+                                if (!confirmed) return;
+                              }
+                            } catch (error) {
+                              console.error("Error checking Stripe:", error);
+                            }
+                          }
+                          handleCourseUpdate({ published: !course.published });
+                        }}
                       >
                         {course.published ? "Published" : "Draft"}
                       </Button>
@@ -200,33 +231,41 @@ export function VisualCourseBuilder({ courseId, initialCourse, onUpdate }: Visua
         </TabsContent>
 
         <TabsContent value="settings" className="mt-6">
-          <Card>
-            <div className="p-6">
-              <h2 className="text-2xl font-bold mb-4">Course Settings</h2>
-              <div className="space-y-4">
-                <div>
-                  <h3 className="font-semibold mb-2">Publishing</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Control when and how your course is visible to students.
-                  </p>
-                  <Button
-                    variant={course.published ? "default" : "outline"}
-                    onClick={() => handleCourseUpdate({ published: !course.published })}
-                  >
-                    {course.published ? "Unpublish Course" : "Publish Course"}
-                  </Button>
-                </div>
-                {course.stripe_product_id && (
+          <div className="space-y-6">
+            <Card>
+              <div className="p-6">
+                <h2 className="text-2xl font-bold mb-4">Course Settings</h2>
+                <div className="space-y-6">
                   <div>
-                    <h3 className="font-semibold mb-2">Stripe Integration</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Product ID: <code className="text-xs bg-muted px-2 py-1 rounded">{course.stripe_product_id}</code>
+                    <h3 className="font-semibold mb-2">Publishing</h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Control when and how your course is visible to students.
                     </p>
+                    <Button
+                      variant={course.published ? "default" : "outline"}
+                      onClick={() => handleCourseUpdate({ published: !course.published })}
+                    >
+                      {course.published ? "Unpublish Course" : "Publish Course"}
+                    </Button>
                   </div>
-                )}
+                </div>
               </div>
-            </div>
-          </Card>
+            </Card>
+
+            <StripeProductSelector
+              courseId={courseId}
+              currentProductId={course.stripe_product_id}
+              currentPriceId={course.stripe_price_id}
+              onProductLinked={async (productId, priceId) => {
+                await handleCourseUpdate({
+                  stripe_product_id: productId || null,
+                  stripe_price_id: priceId || null,
+                });
+                // Refresh course data
+                if (onUpdate) onUpdate();
+              }}
+            />
+          </div>
         </TabsContent>
       </Tabs>
     </div>

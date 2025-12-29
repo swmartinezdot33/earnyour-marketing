@@ -6,9 +6,10 @@ import type { Course } from "@/lib/db/schema";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/layout/Container";
-import { Section } from "@/components/layout/Section";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Plus, BookOpen } from "lucide-react";
+import { EnhancedCourseList } from "@/components/admin/EnhancedCourseList";
+import { StripeWarningBanner } from "@/components/admin/StripeWarningBanner";
 
 export const metadata: Metadata = {
   title: "Admin - Courses | EarnYour Marketing",
@@ -34,7 +35,7 @@ export default async function AdminCoursesPage() {
   }
 
   return (
-    <Section className="pt-24 pb-16">
+    <div className="p-8">
       <Container>
         <div className="flex justify-between items-center mb-8">
           <div>
@@ -42,7 +43,7 @@ export default async function AdminCoursesPage() {
               Course Management
             </h1>
             <p className="text-muted-foreground">
-              Create and manage your training courses
+              Create and manage your training courses with advanced filtering and analytics
             </p>
           </div>
           <div className="flex gap-4">
@@ -54,6 +55,9 @@ export default async function AdminCoursesPage() {
             </Link>
           </div>
         </div>
+
+        {/* Stripe Warning Banner */}
+        <StripeWarningBanner className="mb-6" />
 
         {courses.length === 0 ? (
           <Card>
@@ -72,40 +76,10 @@ export default async function AdminCoursesPage() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {courses.map((course) => (
-              <Link key={course.id} href={`/admin/courses/${course.id}/builder`}>
-                <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer">
-                  <CardHeader>
-                    <div className="flex justify-between items-start mb-2">
-                      <CardTitle className="text-xl">{course.title}</CardTitle>
-                      {!course.published && (
-                        <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
-                          Draft
-                        </span>
-                      )}
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                      {course.short_description || course.description}
-                    </p>
-                    <div className="flex justify-between items-center">
-                      <span className="text-lg font-bold text-brand-navy">
-                        ${course.price}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {course.published ? "Published" : "Draft"}
-                      </span>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
+          <EnhancedCourseList initialCourses={courses} />
         )}
       </Container>
-    </Section>
+    </div>
   );
 }
 

@@ -1,8 +1,8 @@
 "use client";
 
 import { Container } from "@/components/layout/Container";
-import { Section } from "@/components/layout/Section";
 import { CourseWizard } from "@/components/admin/CourseWizard";
+import { StripeWarningBanner } from "@/components/admin/StripeWarningBanner";
 
 export default function NewCoursePage() {
   const handleComplete = (course: any) => {
@@ -11,7 +11,7 @@ export default function NewCoursePage() {
   };
 
   return (
-    <Section className="pt-24 pb-16">
+    <div className="p-8">
       <Container className="max-w-4xl">
         <div className="mb-8">
           <h1 className="text-4xl font-bold font-heading text-brand-navy mb-2">
@@ -22,8 +22,11 @@ export default function NewCoursePage() {
           </p>
         </div>
 
+        {/* Stripe Warning Banner */}
+        <StripeWarningBanner className="mb-6" />
+
         <CourseWizard onComplete={handleComplete} />
       </Container>
-    </Section>
+    </div>
   );
 }

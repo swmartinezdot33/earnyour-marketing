@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>You've been invited - EarnYour Marketing</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #F3F4F6;">
+    <!-- Email Container -->
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #F3F4F6; padding: 40px 20px;">
+        <tr>
+            <td align="center">
+                <!-- Main Content Card -->
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="max-width: 600px; background-color: #FFFFFF; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden;">
+                    
+                    <!-- Header with Brand Color -->
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #EB7030 0%, #1A2D4E 100%); padding: 40px 40px 30px 40px; text-align: center;">
+                            <h1 style="margin: 0; color: #FFFFFF; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">
+                                EarnYour Marketing
+                            </h1>
+                            <p style="margin: 8px 0 0 0; color: #E5D3B8; font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px;">
+                                Performance First Local Growth Partner
+                            </p>
+                        </td>
+                    </tr>
+                    
+                    <!-- Main Content -->
+                    <tr>
+                        <td style="padding: 48px 40px;">
+                            <!-- Welcome Message -->
+                            <h2 style="margin: 0 0 16px 0; color: #1A2D4E; font-size: 24px; font-weight: 700; line-height: 1.3;">
+                                You've been invited!
+                            </h2>
+                            <p style="margin: 0 0 32px 0; color: #373737; font-size: 16px; line-height: 1.6;">
+                                You have been invited to create an account on <strong style="color: #1A2D4E;">{{ .SiteURL }}</strong>. Click the button below to accept the invitation and get started.
+                            </p>
+                            
+                            <!-- CTA Button -->
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                <tr>
+                                    <td align="center" style="padding: 0 0 32px 0;">
+                                        <a href="{{ .ConfirmationURL }}" style="display: inline-block; padding: 16px 40px; background-color: #EB7030; color: #FFFFFF; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: 600; letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(235, 112, 48, 0.3);">
+                                            Accept Invitation
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Alternative Link -->
+                            <p style="margin: 0 0 8px 0; color: #6B7280; font-size: 14px; line-height: 1.5;">
+                                Or copy and paste this link into your browser:
+                            </p>
+                            <p style="margin: 0 0 32px 0; color: #EB7030; font-size: 12px; line-height: 1.5; word-break: break-all; font-family: 'Courier New', monospace;">
+                                {{ .ConfirmationURL }}
+                            </p>
+                            
+                            <!-- Security Notice -->
+                            <div style="background-color: #F3F4F6; border-left: 4px solid #EB7030; padding: 16px; border-radius: 4px; margin-top: 32px;">
+                                <p style="margin: 0; color: #373737; font-size: 14px; line-height: 1.5;">
+                                    <strong style="color: #1A2D4E;">Note:</strong> This invitation link will expire in 7 days. If you didn't expect this invitation, you can safely ignore this email.
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color: #F9FAFB; padding: 32px 40px; border-top: 1px solid #E5E7EB;">
+                            <p style="margin: 0 0 12px 0; color: #6B7280; font-size: 14px; line-height: 1.5; text-align: center;">
+                                This is an automated message from <strong style="color: #1A2D4E;">EarnYour Marketing</strong>
+                            </p>
+                            <p style="margin: 0; color: #9CA3AF; font-size: 12px; line-height: 1.5; text-align: center;">
+                                © 2025 EarnYour Marketing. All rights reserved.
+                            </p>
+                        </td>
+                    </tr>
+                    
+                </table>
+                
+                <!-- Bottom Spacing -->
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="max-width: 600px;">
+                    <tr>
+                        <td style="padding: 20px 0; text-align: center;">
+                            <p style="margin: 0; color: #9CA3AF; font-size: 12px; line-height: 1.5;">
+                                Need help? Contact us at <a href="mailto:support@earnyour.com" style="color: #EB7030; text-decoration: none;">support@earnyour.com</a>
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+

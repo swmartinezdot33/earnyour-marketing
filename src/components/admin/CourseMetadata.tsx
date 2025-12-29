@@ -61,7 +61,33 @@ export function CourseMetadata({ course, onUpdate, loading }: CourseMetadataProp
     });
   };
 
-  const handleTogglePublished = () => {
+  const handleTogglePublished = async () => {
+    // Check Stripe status and product linking before publishing
+    if (!course.published) {
+      try {
+        const response = await fetch("/api/admin/stripe/status");
+        const data = await response.json();
+        
+        let warningMessage = "";
+        if (!data.configured) {
+          warningMessage = "Stripe is not configured. Courses without Stripe integration cannot accept payments.";
+        } else if (!course.stripe_product_id) {
+          warningMessage = "This course is not linked to a Stripe product. Students won't be able to purchase it.";
+        }
+        
+        if (warningMessage) {
+          const confirmed = confirm(
+            warningMessage + "\n\n" +
+            "Do you want to publish anyway? (You can configure Stripe and link products later in Settings)"
+          );
+          if (!confirmed) return;
+        }
+      } catch (error) {
+        console.error("Error checking Stripe status:", error);
+        // Continue with publish if check fails
+      }
+    }
+    
     onUpdate({
       published: !course.published,
     });

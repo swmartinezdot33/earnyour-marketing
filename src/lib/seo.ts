@@ -56,10 +56,9 @@ export function constructLocalBusinessSchema() {
     "telephone": "+16625550123",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "2304 Jackson Ave W",
-      "addressLocality": "Oxford",
+      "addressLocality": "Tupelo",
       "addressRegion": "MS",
-      "postalCode": "38655",
+      "postalCode": "38801",
       "addressCountry": "US"
     },
     "url": "https://earnyour.com",
@@ -128,10 +127,9 @@ export function constructServiceAreaSchema(city: { name: string; state: string; 
       "name": "EarnYour Marketing",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "2304 Jackson Ave W",
-        "addressLocality": "Oxford",
+        "addressLocality": "Tupelo",
         "addressRegion": "MS",
-        "postalCode": "38655",
+        "postalCode": "38801",
         "addressCountry": "US"
       }
     },

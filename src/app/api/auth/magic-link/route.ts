@@ -53,12 +53,25 @@ export async function POST(request: NextRequest) {
     });
 
     if (error) {
-      console.error("Supabase auth error:", error);
+      console.error("Supabase auth error:", {
+        message: error.message,
+        status: error.status,
+        name: error.name,
+        fullError: JSON.stringify(error, null, 2),
+      });
+      
+      // Provide more helpful error messages
+      let errorMessage = error.message;
+      if (error.message?.includes("email") || error.message?.includes("Email")) {
+        errorMessage = "Unable to send email. Please check your Supabase email configuration.";
+      }
+      
       return NextResponse.json(
         {
           success: false,
-          error: error.message,
+          error: errorMessage,
           code: error.status || null,
+          details: process.env.NODE_ENV === "development" ? error.message : undefined,
         },
         { status: 500 }
       );

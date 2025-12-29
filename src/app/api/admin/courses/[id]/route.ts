@@ -12,6 +12,8 @@ const updateCourseSchema = z.object({
   price: z.number().min(0).optional(),
   image_url: z.string().url().optional().nullable().or(z.literal("")),
   published: z.boolean().optional(),
+  stripe_product_id: z.string().optional().nullable(),
+  stripe_price_id: z.string().optional().nullable(),
 });
 
 export async function GET(
@@ -72,6 +74,8 @@ export async function PATCH(
     if (validated.price !== undefined) updates.price = validated.price;
     if (validated.image_url !== undefined) updates.image_url = validated.image_url || null;
     if (validated.published !== undefined) updates.published = validated.published;
+    if (validated.stripe_product_id !== undefined) updates.stripe_product_id = validated.stripe_product_id || null;
+    if (validated.stripe_price_id !== undefined) updates.stripe_price_id = validated.stripe_price_id || null;
 
     const course = await updateCourse(id, updates);
 

@@ -65,13 +65,22 @@ export async function deleteSession(): Promise<void> {
   cookieStore.delete("session");
 }
 
+// List of admin emails - these will automatically get admin role
+const ADMIN_EMAILS = [
+  "steven@earnyour.com",
+  // Add more admin emails here
+];
+
 export async function getOrCreateUser(email: string, name?: string) {
+  const emailLower = email.toLowerCase();
+  const isAdminEmail = ADMIN_EMAILS.includes(emailLower);
+  
   let user = await getUserByEmail(email);
   if (!user) {
     user = await createUser({
-      email: email.toLowerCase(),
+      email: emailLower,
       name: name || null,
-      role: "student",
+      role: isAdminEmail ? "admin" : "student",
       status: "active",
       deleted_at: null,
       // GHL fields are optional and will default to null in database
@@ -79,6 +88,10 @@ export async function getOrCreateUser(email: string, name?: string) {
       ghl_location_id: null,
       whitelabel_id: null,
     });
+  } else if (isAdminEmail && user.role !== "admin") {
+    // If user exists but should be admin, update their role
+    const { updateUser } = await import("@/lib/db/users");
+    user = await updateUser(user.id, { role: "admin" });
   }
   return user;
 }

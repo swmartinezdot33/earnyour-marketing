@@ -1,16 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Container } from "@/components/layout/Container";
-import { Section } from "@/components/layout/Section";
 import { Button } from "@/components/ui/button";
 import { CourseBuilder } from "@/components/admin/CourseBuilder";
 import { ArrowLeft, Loader2 } from "lucide-react";
 
 export default function CourseBuilderPage({ params }: { params: Promise<{ id: string }> }) {
-  const router = useRouter();
   const [courseId, setCourseId] = useState<string>("");
   const [course, setCourse] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -28,6 +25,8 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
       const data = await response.json();
       if (data.success) {
         setCourse(data.course);
+      } else {
+        console.error("Failed to fetch course:", data.error);
       }
       setLoading(false);
     } catch (error) {
@@ -38,47 +37,48 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
 
   if (loading) {
     return (
-      <Section className="pt-24 pb-16">
+      <div className="p-8">
         <Container>
           <div className="flex items-center justify-center py-12">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
         </Container>
-      </Section>
+      </div>
     );
   }
 
   if (!course) {
     return (
-      <Section className="pt-24 pb-16">
+      <div className="p-8">
         <Container>
           <div className="text-center py-12">
-            <p className="text-muted-foreground">Course not found</p>
+            <p className="text-muted-foreground mb-4">Course not found</p>
             <Link href="/admin/courses">
-              <Button variant="outline" className="mt-4">
+              <Button variant="outline">
+                <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Courses
               </Button>
             </Link>
           </div>
         </Container>
-      </Section>
+      </div>
     );
   }
 
   if (!courseId) {
     return (
-      <Section className="pt-24 pb-16">
+      <div className="p-8">
         <Container>
           <div className="flex items-center justify-center py-12">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
         </Container>
-      </Section>
+      </div>
     );
   }
 
   return (
-    <Section className="pt-24 pb-16">
+    <div className="p-8">
       <Container className="max-w-7xl">
         <div className="mb-6">
           <Link href="/admin/courses">
@@ -91,7 +91,7 @@ export default function CourseBuilderPage({ params }: { params: Promise<{ id: st
 
         <CourseBuilder courseId={courseId} initialCourse={course} onUpdate={() => fetchCourse(courseId)} />
       </Container>
-    </Section>
+    </div>
   );
 }
 

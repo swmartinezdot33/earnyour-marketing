@@ -5,13 +5,12 @@ import { getAllUsers } from "@/lib/db/users-admin";
 import { getUserEnrollments } from "@/lib/db/enrollments";
 import { getUserTransactions } from "@/lib/db/transactions";
 import { Container } from "@/components/layout/Container";
-import { Section } from "@/components/layout/Section";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Search, Users as UsersIcon } from "lucide-react";
 import Link from "next/link";
-import { AdminUsersTable } from "@/components/admin/AdminUsersTable";
+import { EnhancedUsersTable } from "@/components/admin/EnhancedUsersTable";
 
 export const metadata: Metadata = {
   title: "Admin - Users | EarnYour Marketing",
@@ -56,7 +55,7 @@ export default async function AdminUsersPage() {
   );
 
   return (
-    <Section className="pt-24 pb-16">
+    <div className="p-8">
       <Container>
         <div className="flex justify-between items-center mb-8">
           <div>
@@ -93,10 +92,10 @@ export default async function AdminUsersPage() {
             </CardContent>
           </Card>
         ) : (
-          <AdminUsersTable users={usersWithStats} />
+          <EnhancedUsersTable initialUsers={usersWithStats} />
         )}
       </Container>
-    </Section>
+    </div>
   );
 }
 
