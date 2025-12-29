@@ -85,7 +85,7 @@ export default function LessonEditPage({ params }: { params: Promise<{ id: strin
           courseId={courseId}
           lesson={lesson}
           content={content}
-          onUpdate={fetchLesson}
+          onUpdate={() => fetchLesson(lessonId)}
         />
       </Container>
     </Section>
