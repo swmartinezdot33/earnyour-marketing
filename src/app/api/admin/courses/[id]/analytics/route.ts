@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { getSupabaseClient } from "@/lib/db/courses";
+import type { Enrollment, Progress, StripePurchase } from "@/lib/db/schema";
 
 export async function GET(
   request: NextRequest,
@@ -22,6 +23,7 @@ export async function GET(
       .eq("course_id", courseId);
 
     if (enrollmentsError) throw enrollmentsError;
+    const enrollmentsData = (enrollments || []) as Enrollment[];
 
     // Get modules for this course
     const { data: modulesData, error: modulesError } = await client
@@ -50,6 +52,7 @@ export async function GET(
       .in("lesson_id", lessonIds);
 
     if (progressError) throw progressError;
+    const progressData = (progress || []) as Progress[];
 
     // Get purchases
     const { data: purchases, error: purchasesError } = await client
@@ -58,21 +61,22 @@ export async function GET(
       .eq("course_id", courseId);
 
     if (purchasesError) throw purchasesError;
+    const purchasesData = (purchases || []) as StripePurchase[];
 
     // Calculate analytics
-    const totalEnrollments = enrollments?.length || 0;
-    const activeEnrollments = enrollments?.filter((e) => e.active).length || 0;
-    const totalRevenue = purchases?.reduce((sum, p) => sum + (p.amount_paid || 0), 0) || 0;
-    const totalSales = purchases?.length || 0;
+    const totalEnrollments = enrollmentsData.length;
+    const activeEnrollments = enrollmentsData.filter((e) => e.active).length;
+    const totalRevenue = purchasesData.reduce((sum, p) => sum + (p.amount_paid || 0), 0);
+    const totalSales = purchasesData.length;
 
     // Calculate completion rates
-    const completedProgress = progress?.filter((p) => p.completed).length || 0;
-    const totalProgress = progress?.length || 0;
+    const completedProgress = progressData.filter((p) => p.completed).length;
+    const totalProgress = progressData.length;
     const completionRate = totalProgress > 0 ? (completedProgress / totalProgress) * 100 : 0;
 
     // Calculate average progress
     const progressByUser = new Map<string, number[]>();
-    progress?.forEach((p) => {
+    progressData.forEach((p) => {
       if (!progressByUser.has(p.user_id)) {
         progressByUser.set(p.user_id, []);
       }
@@ -89,18 +93,18 @@ export async function GET(
         : 0;
 
     // Get recent enrollments
-    const recentEnrollments = enrollments
-      ?.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    const recentEnrollments = enrollmentsData
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
       .slice(0, 10)
       .map((e) => ({
         id: e.id,
         created_at: e.created_at,
         user_email: e.user_id, // You might want to join with users table
-      })) || [];
+      }));
 
     // Get top performing lessons
     const lessonProgress = new Map<string, { completed: number; total: number }>();
-    progress?.forEach((p) => {
+    progressData.forEach((p) => {
       if (!lessonProgress.has(p.lesson_id)) {
         lessonProgress.set(p.lesson_id, { completed: 0, total: 0 });
       }
