@@ -11,9 +11,11 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Container } from "@/components/layout/Container";
 import { Logo } from "@/components/brand/Logo";
+import { CartDrawer } from "@/components/store/CartDrawer";
 
 const navItems = [
   { title: "Services", href: "/services" },
+  { title: "Store", href: "/store" },
   { title: "Case Studies", href: "/case-studies" },
   { title: "Process", href: "/process" },
   { title: "About", href: "/about" },
@@ -61,16 +63,17 @@ export function Navbar() {
                 {item.title}
               </Link>
             ))}
+            <CartDrawer />
             {isLoggedIn ? (
               <>
                 <Link
                   href="/courses"
                   className={cn(
                     "text-sm font-medium transition-colors hover:text-primary",
-                    pathname.startsWith("/courses") && !pathname.startsWith("/courses/") ? "text-primary" : "text-foreground/80"
+                    pathname.startsWith("/courses") && !pathname.startsWith("/courses/") && !pathname.startsWith("/store") ? "text-primary" : "text-foreground/80"
                   )}
                 >
-                  Courses
+                  My Courses
                 </Link>
                 <Link
                   href={userRole === "admin" ? "/admin/courses" : "/dashboard"}
@@ -119,6 +122,9 @@ export function Navbar() {
                       {item.title}
                     </Link>
                   ))}
+                  <div className="flex justify-center mt-4">
+                    <CartDrawer />
+                  </div>
                   {isLoggedIn ? (
                     <>
                       <Link
@@ -126,10 +132,10 @@ export function Navbar() {
                         onClick={() => setIsOpen(false)}
                         className={cn(
                           "text-lg font-medium transition-colors hover:text-primary",
-                          pathname.startsWith("/courses") && !pathname.startsWith("/courses/") ? "text-primary" : "text-foreground/80"
+                          pathname.startsWith("/courses") && !pathname.startsWith("/courses/") && !pathname.startsWith("/store") ? "text-primary" : "text-foreground/80"
                         )}
                       >
-                        Courses
+                        My Courses
                       </Link>
                       <Link
                         href={userRole === "admin" ? "/admin/courses" : "/dashboard"}

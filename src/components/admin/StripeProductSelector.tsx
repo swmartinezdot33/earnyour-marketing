@@ -6,8 +6,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Link2, Unlink, RefreshCw, ExternalLink } from "lucide-react";
+import { Loader2, Link2, Unlink, RefreshCw, ExternalLink, Plus } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { CreateStripeProductDialog } from "./CreateStripeProductDialog";
+import { showToast } from "@/components/ui/toast";
 
 interface StripeProduct {
   id: string;
@@ -25,6 +27,9 @@ interface StripeProductSelectorProps {
   courseId: string;
   currentProductId?: string | null;
   currentPriceId?: string | null;
+  courseTitle?: string;
+  coursePrice?: number;
+  courseDescription?: string;
   onProductLinked: (productId: string, priceId: string) => void;
 }
 
@@ -32,6 +37,9 @@ export function StripeProductSelector({
   courseId,
   currentProductId,
   currentPriceId,
+  courseTitle,
+  coursePrice,
+  courseDescription,
   onProductLinked,
 }: StripeProductSelectorProps) {
   const [products, setProducts] = useState<StripeProduct[]>([]);
@@ -41,6 +49,7 @@ export function StripeProductSelector({
   const [linking, setLinking] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
   useEffect(() => {
     if (currentProductId) {
@@ -129,6 +138,40 @@ export function StripeProductSelector({
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to unlink product");
+    } finally {
+      setLinking(false);
+    }
+  };
+
+  const handleProductCreated = async (productId: string, priceId: string) => {
+    // Refresh products list
+    await fetchProducts();
+    
+    // Automatically link the newly created product
+    setSelectedProductId(productId);
+    setLinking(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const response = await fetch(`/api/admin/courses/${courseId}/stripe/link`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          stripe_product_id: productId,
+          stripe_price_id: priceId,
+        }),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setSuccess("Product created and linked successfully!");
+        onProductLinked(productId, priceId);
+      } else {
+        setError(data.error || "Product created but failed to link");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Product created but failed to link");
     } finally {
       setLinking(false);
     }
@@ -238,11 +281,18 @@ export function StripeProductSelector({
                 <Loader2 className="h-6 w-6 animate-spin text-primary" />
               </div>
             ) : products.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
+              <div className="text-center py-8 text-muted-foreground space-y-4">
                 <p className="mb-2">No Stripe products found</p>
-                <p className="text-sm">
-                  Create products in your Stripe Dashboard or configure Stripe first.
+                <p className="text-sm mb-4">
+                  Create a new product for this course or create products in your Stripe Dashboard.
                 </p>
+                <Button
+                  onClick={() => setCreateDialogOpen(true)}
+                  variant="default"
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Create New Product
+                </Button>
               </div>
             ) : (
               <>
@@ -296,27 +346,47 @@ export function StripeProductSelector({
                   </div>
                 )}
 
-                <Button
-                  onClick={handleLinkProduct}
-                  disabled={linking || !selectedProductId}
-                  className="w-full"
-                >
-                  {linking ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Linking...
-                    </>
-                  ) : (
-                    <>
-                      <Link2 className="mr-2 h-4 w-4" />
-                      Link Product
-                    </>
-                  )}
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleLinkProduct}
+                    disabled={linking || !selectedProductId}
+                    className="flex-1"
+                  >
+                    {linking ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Linking...
+                      </>
+                    ) : (
+                      <>
+                        <Link2 className="mr-2 h-4 w-4" />
+                        Link Product
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    onClick={() => setCreateDialogOpen(true)}
+                    variant="outline"
+                    disabled={linking}
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Create New
+                  </Button>
+                </div>
               </>
             )}
           </div>
         )}
+
+        {/* Create Product Dialog */}
+        <CreateStripeProductDialog
+          open={createDialogOpen}
+          onClose={() => setCreateDialogOpen(false)}
+          onProductCreated={handleProductCreated}
+          defaultName={courseTitle}
+          defaultPrice={coursePrice}
+          defaultDescription={courseDescription}
+        />
       </CardContent>
     </Card>
   );

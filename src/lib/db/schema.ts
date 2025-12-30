@@ -23,6 +23,9 @@ export interface Course {
   price: number;
   image_url: string | null;
   published: boolean;
+  category: string | null;
+  featured: boolean;
+  preview_lesson_id: string | null;
   created_by: string;
   created_at: string;
   updated_at: string;
@@ -171,5 +174,22 @@ export interface WhitelabelUserAssignment {
   user_id: string;
   whitelabel_id: string;
   assigned_at: string;
+}
+
+export interface CourseBundle {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  short_description: string | null;
+  price: number;
+  image_url: string | null;
+  course_ids: string[];
+  featured: boolean;
+  published: boolean;
+  created_at: string;
+  updated_at: string;
+  stripe_product_id: string | null;
+  stripe_price_id: string | null;
 }
 

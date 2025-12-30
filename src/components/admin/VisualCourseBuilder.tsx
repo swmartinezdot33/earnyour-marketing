@@ -256,6 +256,9 @@ export function VisualCourseBuilder({ courseId, initialCourse, onUpdate }: Visua
               courseId={courseId}
               currentProductId={course.stripe_product_id}
               currentPriceId={course.stripe_price_id}
+              courseTitle={course.title}
+              coursePrice={course.price}
+              courseDescription={course.description || course.short_description}
               onProductLinked={async (productId, priceId) => {
                 await handleCourseUpdate({
                   stripe_product_id: productId || null,

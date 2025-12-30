@@ -3,6 +3,7 @@ import { getStripeClient } from "@/lib/stripe/config";
 import { headers } from "next/headers";
 import { enrollUserInCourse } from "@/lib/db/enrollments";
 import { getSupabaseClient } from "@/lib/db/courses";
+import { getOrCreateUser } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
@@ -41,32 +42,105 @@ export async function POST(request: NextRequest) {
     case "checkout.session.completed": {
       const session = event.data.object as any;
       
-      const courseId = session.metadata?.course_id;
-      const userId = session.metadata?.user_id;
+      // Support both single course (legacy) and multi-item checkout
+      const courseIdsJson = session.metadata?.course_ids;
+      const bundleIdsJson = session.metadata?.bundle_ids;
+      const legacyCourseId = session.metadata?.course_id;
+      const legacyUserId = session.metadata?.user_id;
+      
       const customerEmail = session.customer_email || session.customer_details?.email;
+      const customerName = session.customer_details?.name;
 
-      if (!courseId || !userId) {
-        console.error("Missing course_id or user_id in session metadata");
+      if (!customerEmail) {
+        console.error("No customer email in session");
         break;
       }
 
       try {
-        // Enroll user in course
-        await enrollUserInCourse(userId, courseId, session.id);
-
-        // Record purchase
+        // Get or create user (guest checkout support)
+        const user = await getOrCreateUser(customerEmail, customerName || undefined);
+        
         const supabaseClient = getSupabaseClient();
-        await (supabaseClient.from("stripe_purchases") as any).insert([
-          {
-            user_id: userId,
-            course_id: courseId,
+        const purchases: any[] = [];
+
+        // Handle legacy single course checkout
+        if (legacyCourseId && legacyUserId) {
+          await enrollUserInCourse(user.id, legacyCourseId, session.id);
+          purchases.push({
+            user_id: user.id,
+            course_id: legacyCourseId,
             stripe_checkout_session_id: session.id,
             stripe_payment_intent_id: session.payment_intent,
             amount: session.amount_total ? session.amount_total / 100 : 0,
             currency: session.currency || "usd",
             status: "completed",
-          },
-        ]).select().single();
+          });
+        } else {
+          // Handle multi-item checkout
+          const courseIds: string[] = courseIdsJson ? JSON.parse(courseIdsJson) : [];
+          const bundleIds: string[] = bundleIdsJson ? JSON.parse(bundleIdsJson) : [];
+
+          // Enroll in all courses
+          for (const courseId of courseIds) {
+            try {
+              await enrollUserInCourse(user.id, courseId, session.id);
+              purchases.push({
+                user_id: user.id,
+                course_id: courseId,
+                stripe_checkout_session_id: session.id,
+                stripe_payment_intent_id: session.payment_intent,
+                amount: 0, // Will be calculated from line items
+                currency: session.currency || "usd",
+                status: "completed",
+              });
+            } catch (error) {
+              console.error(`Error enrolling in course ${courseId}:`, error);
+            }
+          }
+
+          // Handle bundle enrollments (enroll in all courses in each bundle)
+          for (const bundleId of bundleIds) {
+            const { data: bundle } = await supabaseClient
+              .from("course_bundles")
+              .select("course_ids")
+              .eq("id", bundleId)
+              .single();
+
+            if (bundle && bundle.course_ids) {
+              for (const courseId of bundle.course_ids) {
+                try {
+                  await enrollUserInCourse(user.id, courseId, session.id);
+                  purchases.push({
+                    user_id: user.id,
+                    course_id: courseId,
+                    stripe_checkout_session_id: session.id,
+                    stripe_payment_intent_id: session.payment_intent,
+                    amount: 0,
+                    currency: session.currency || "usd",
+                    status: "completed",
+                  });
+                } catch (error) {
+                  console.error(`Error enrolling in course ${courseId} from bundle:`, error);
+                }
+              }
+            }
+          }
+        }
+
+        // Record purchases
+        if (purchases.length > 0) {
+          // Calculate amount per item if we have total
+          const totalAmount = session.amount_total ? session.amount_total / 100 : 0;
+          const amountPerItem = purchases.length > 0 ? totalAmount / purchases.length : 0;
+
+          for (const purchase of purchases) {
+            if (purchase.amount === 0) {
+              purchase.amount = amountPerItem;
+            }
+          }
+
+          await supabaseClient.from("stripe_purchases").insert(purchases);
+        }
 
       } catch (error) {
         console.error("Error processing enrollment:", error);

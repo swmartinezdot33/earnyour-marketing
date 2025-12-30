@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { ConditionalNavbar } from "@/components/layout/ConditionalNavbar";
 import { constructLocalBusinessSchema } from "@/lib/seo";
 import { ToastContainer } from "@/components/ui/toast";
+import { CartProvider } from "@/contexts/CartContext";
 
 // Fallback fonts from Google
 const oswald = Oswald({
@@ -89,12 +90,14 @@ export default function RootLayout({
             __html: JSON.stringify(constructLocalBusinessSchema()),
           }}
         />
-        <Suspense fallback={<>{children}</>}>
-          <ConditionalNavbar>
-            {children}
-          </ConditionalNavbar>
-        </Suspense>
-        <ToastContainer />
+        <CartProvider>
+          <Suspense fallback={<>{children}</>}>
+            <ConditionalNavbar>
+              {children}
+            </ConditionalNavbar>
+          </Suspense>
+          <ToastContainer />
+        </CartProvider>
       </body>
     </html>
   );

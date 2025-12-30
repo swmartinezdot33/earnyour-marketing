@@ -58,6 +58,45 @@ export async function getAllCourses(publishedOnly = true) {
   return data as Course[];
 }
 
+export async function getFeaturedCourses() {
+  const client = getSupabaseClient();
+  const { data, error } = await client
+    .from("courses")
+    .select("*")
+    .eq("published", true)
+    .eq("featured", true)
+    .order("created_at", { ascending: false });
+  
+  if (error) throw error;
+  return data as Course[];
+}
+
+export async function getCoursesByCategory(category: string) {
+  const client = getSupabaseClient();
+  const { data, error } = await client
+    .from("courses")
+    .select("*")
+    .eq("published", true)
+    .eq("category", category)
+    .order("created_at", { ascending: false });
+  
+  if (error) throw error;
+  return data as Course[];
+}
+
+export async function searchCourses(searchTerm: string) {
+  const client = getSupabaseClient();
+  const { data, error } = await client
+    .from("courses")
+    .select("*")
+    .eq("published", true)
+    .or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,short_description.ilike.%${searchTerm}%`)
+    .order("created_at", { ascending: false });
+  
+  if (error) throw error;
+  return data as Course[];
+}
+
 export async function createCourse(course: Omit<Course, "id" | "created_at" | "updated_at">) {
   const client = getSupabaseClient();
   const { data, error } = await (client.from("courses") as any)
