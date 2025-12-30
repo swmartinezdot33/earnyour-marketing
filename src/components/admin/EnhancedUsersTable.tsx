@@ -15,11 +15,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Search, Eye, ChevronDown, ChevronRight } from "lucide-react";
+import { Search, Eye, ChevronDown, ChevronRight, Edit } from "lucide-react";
 import { UserFilters } from "./UserFilters";
 import { BulkActionsBar } from "./BulkActionsBar";
 import { ExportButton } from "./ExportButton";
 import { UserActivitySummary } from "./UserActivitySummary";
+import { UserEditDialog } from "./UserEditDialog";
 import { arrayToCSV, downloadCSV, formatDateForCSV, formatCurrencyForCSV } from "@/lib/utils/export";
 import type { User } from "@/lib/db/schema";
 
@@ -40,6 +41,7 @@ export function EnhancedUsersTable({ initialUsers }: EnhancedUsersTableProps) {
   const [filteredUsers, setFilteredUsers] = useState<UserWithStats[]>(initialUsers);
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
   const [expandedUsers, setExpandedUsers] = useState<Set<string>>(new Set());
+  const [editingUser, setEditingUser] = useState<UserWithStats | null>(null);
   const [filters, setFilters] = useState<{
     search?: string;
     role?: "admin" | "student" | "all";
@@ -128,6 +130,23 @@ export function EnhancedUsersTable({ initialUsers }: EnhancedUsersTableProps) {
       newExpanded.add(userId);
     }
     setExpandedUsers(newExpanded);
+  };
+
+  const handleEditUser = (user: UserWithStats) => {
+    setEditingUser(user);
+  };
+
+  const handleUserUpdated = async () => {
+    // Refresh users list
+    try {
+      const response = await fetch("/api/admin/users");
+      if (response.ok) {
+        const updatedUsers = await response.json();
+        setUsers(updatedUsers);
+      }
+    } catch (error) {
+      console.error("Failed to refresh users:", error);
+    }
   };
 
   const handleBulkActivate = async () => {
@@ -273,11 +292,20 @@ export function EnhancedUsersTable({ initialUsers }: EnhancedUsersTableProps) {
                             </Badge>
                           </TableCell>
                           <TableCell className="text-right">
-                            <Link href={`/admin/users/${user.id}`}>
-                              <Button variant="ghost" size="sm">
-                                <Eye className="h-4 w-4" />
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleEditUser(user)}
+                              >
+                                <Edit className="h-4 w-4" />
                               </Button>
-                            </Link>
+                              <Link href={`/admin/users/${user.id}`}>
+                                <Button variant="ghost" size="sm">
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                              </Link>
+                            </div>
                           </TableCell>
                         </TableRow>
                         {isExpanded && (
@@ -303,6 +331,16 @@ export function EnhancedUsersTable({ initialUsers }: EnhancedUsersTableProps) {
           </div>
         </CardContent>
       </Card>
+
+      {/* Edit User Dialog */}
+      {editingUser && (
+        <UserEditDialog
+          user={editingUser}
+          open={!!editingUser}
+          onClose={() => setEditingUser(null)}
+          onUpdate={handleUserUpdated}
+        />
+      )}
     </div>
   );
 }

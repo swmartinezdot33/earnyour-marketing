@@ -1,6 +1,7 @@
 import { Metadata } from "next";
-import { getCourseBySlug, getModulesByCourseId } from "@/lib/db/courses";
-import { getLessonsByModuleId, getLessonWithContent } from "@/lib/db/courses";
+import { getCourseBySlugCached } from "@/lib/db/courses-optimized";
+import { getCourseWithModulesAndLessons } from "@/lib/db/courses-optimized";
+import { getLessonWithContent } from "@/lib/db/courses";
 import { notFound, redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { checkCourseAccessBySlug, validateGHLMembership } from "@/lib/auth/course-access";
@@ -12,7 +13,7 @@ import { CheckCircle2, Lock, PlayCircle } from "lucide-react";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const course = await getCourseBySlug(slug);
+  const course = await getCourseBySlugCached(slug);
   
   if (!course) {
     return { title: "Course Not Found" };
@@ -25,7 +26,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function CourseLearnPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const course = await getCourseBySlug(slug);
+  
+  // Optimized: Fetch course with all modules and lessons in a single optimized query
+  const { course, modules: modulesWithLessons } = await getCourseWithModulesAndLessons(slug);
   const session = await getSession();
   
   if (!course) {
@@ -45,16 +48,6 @@ export default async function CourseLearnPage({ params }: { params: Promise<{ sl
 
   // Get membership info
   const membership = await validateGHLMembership(session.userId);
-
-  const modules = await getModulesByCourseId(course.id);
-  
-  // Fetch lessons for each module
-  const modulesWithLessons = await Promise.all(
-    modules.map(async (module) => {
-      const lessons = await getLessonsByModuleId(module.id);
-      return { ...module, lessons };
-    })
-  );
 
   // Get user progress
   const userProgress = await getUserProgressForCourse(session.userId, course.id);

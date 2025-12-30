@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { getAllCourses } from "@/lib/db/courses";
+import { getAllCoursesCached } from "@/lib/db/courses-optimized";
 import type { Course } from "@/lib/db/schema";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -28,7 +28,7 @@ export default async function AdminCoursesPage() {
 
   let courses: Course[] = [];
   try {
-    courses = await getAllCourses(false); // Get all courses, including unpublished
+    courses = await getAllCoursesCached(false); // Get all courses, including unpublished
   } catch (error) {
     console.error("Error fetching courses:", error);
     // Continue with empty courses array if fetch fails

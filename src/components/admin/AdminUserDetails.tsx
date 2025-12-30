@@ -1,14 +1,17 @@
 "use client";
 
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { BookOpen, Receipt, Settings, ExternalLink, User as UserIcon } from "lucide-react";
+import { BookOpen, Receipt, Settings, ExternalLink, User as UserIcon, Edit } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { User, Enrollment } from "@/lib/db/schema";
 import { CourseAccessManager } from "@/components/admin/CourseAccessManager";
+import { UserEditDialog } from "./UserEditDialog";
 
 interface Transaction {
   id: string;
@@ -46,18 +49,38 @@ interface AdminUserDetailsProps {
 }
 
 export function AdminUserDetails({
-  user,
+  user: initialUser,
   enrollments,
   transactions,
   totalSpent,
   whitelabelAccount,
   allCourses,
 }: AdminUserDetailsProps) {
+  const [user, setUser] = useState(initialUser);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const router = useRouter();
+
   const formatCurrency = (amount: number, currency: string = "usd") => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: currency.toUpperCase(),
     }).format(amount);
+  };
+
+  const handleUserUpdated = async () => {
+    // Refresh user data
+    try {
+      const response = await fetch(`/api/admin/users/${user.id}`);
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success && result.user) {
+          setUser(result.user);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to refresh user:", error);
+    }
+    router.refresh();
   };
 
   return (
@@ -145,8 +168,8 @@ export function AdminUserDetails({
           <Separator />
 
           <div className="flex gap-2">
-            <Button variant="outline" size="sm">
-              <Settings className="mr-2 h-4 w-4" />
+            <Button variant="outline" size="sm" onClick={() => setEditingUser(user)}>
+              <Edit className="mr-2 h-4 w-4" />
               Edit User
             </Button>
             <TooltipProvider>
@@ -284,6 +307,16 @@ export function AdminUserDetails({
           )}
         </CardContent>
       </Card>
+
+      {/* Edit User Dialog */}
+      {editingUser && (
+        <UserEditDialog
+          user={editingUser}
+          open={!!editingUser}
+          onClose={() => setEditingUser(null)}
+          onUpdate={handleUserUpdated}
+        />
+      )}
     </div>
   );
 }

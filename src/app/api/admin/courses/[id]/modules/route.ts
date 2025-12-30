@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import { getModulesByCourseId, createModule } from "@/lib/db/courses";
+import { getModulesWithLessons } from "@/lib/db/courses-optimized";
+import { createModule } from "@/lib/db/courses";
 import { z } from "zod";
 
 const moduleSchema = z.object({
@@ -19,7 +20,8 @@ export async function GET(
     }
 
     const { id: courseId } = await params;
-    const modules = await getModulesByCourseId(courseId);
+    // Optimized: Get modules with lessons in a single query
+    const modules = await getModulesWithLessons(courseId);
 
     return NextResponse.json({ success: true, modules });
   } catch (error) {
@@ -45,7 +47,7 @@ export async function POST(
     const validated = moduleSchema.parse(body);
 
     // Get current module count for order
-    const existingModules = await getModulesByCourseId(courseId);
+    const existingModules = await getModulesWithLessons(courseId);
     const order = existingModules.length;
 
     const module = await createModule({

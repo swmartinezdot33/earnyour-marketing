@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { getLessonsByModuleId, createLesson } from "@/lib/db/courses";
+import { getLessonsByModuleIds } from "@/lib/db/courses-optimized";
 import { z } from "zod";
 
 const lessonSchema = z.object({

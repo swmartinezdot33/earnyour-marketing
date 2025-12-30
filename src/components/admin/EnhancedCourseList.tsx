@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { CourseFilters } from "./CourseFilters";
 import { BulkActionsBar } from "./BulkActionsBar";
 import { ExportButton } from "./ExportButton";
+import { DeleteCourseDialog } from "./DeleteCourseDialog";
+import { showToast } from "@/components/ui/toast";
 import { arrayToCSV, downloadCSV, formatDateForCSV } from "@/lib/utils/export";
 import type { Course } from "@/lib/db/schema";
 
@@ -35,6 +37,8 @@ export function EnhancedCourseList({ initialCourses }: EnhancedCourseListProps) 
     maxPrice?: number;
   }>({});
   const [loading, setLoading] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   // Fetch course stats
   useEffect(() => {
@@ -144,10 +148,50 @@ export function EnhancedCourseList({ initialCourses }: EnhancedCourseListProps) 
     console.log("Bulk unpublish:", Array.from(selectedCourses));
   };
 
-  const handleBulkDelete = async () => {
-    if (!confirm(`Delete ${selectedCourses.size} course(s)?`)) return;
-    // TODO: Implement bulk delete
-    console.log("Bulk delete:", Array.from(selectedCourses));
+  const handleBulkDelete = () => {
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmBulkDelete = async () => {
+    if (selectedCourses.size === 0) return;
+
+    setDeleting(true);
+    try {
+      const courseIds = Array.from(selectedCourses);
+      const deletePromises = courseIds.map((courseId) =>
+        fetch(`/api/admin/courses/${courseId}`, {
+          method: "DELETE",
+        })
+      );
+
+      const results = await Promise.allSettled(deletePromises);
+      const successful = results.filter((r) => r.status === "fulfilled").length;
+      const failed = results.length - successful;
+
+      if (failed === 0) {
+        showToast(
+          `Successfully deleted ${successful} course${successful > 1 ? "s" : ""}`,
+          "success"
+        );
+        // Remove deleted courses from state
+        setCourses((prev) => prev.filter((c) => !selectedCourses.has(c.id)));
+        setFilteredCourses((prev) => prev.filter((c) => !selectedCourses.has(c.id)));
+        setSelectedCourses(new Set());
+        setDeleteDialogOpen(false);
+      } else {
+        showToast(
+          `Deleted ${successful} course${successful > 1 ? "s" : ""}, but ${failed} failed`,
+          "warning"
+        );
+        // Refresh the list to get accurate state
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error("Error deleting courses:", error);
+      showToast("Failed to delete courses. Please try again.", "error");
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const handleExport = () => {
@@ -297,6 +341,20 @@ export function EnhancedCourseList({ initialCourses }: EnhancedCourseListProps) 
           ))}
         </div>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteCourseDialog
+        open={deleteDialogOpen}
+        onClose={() => !deleting && setDeleteDialogOpen(false)}
+        onConfirm={confirmBulkDelete}
+        courseCount={selectedCourses.size}
+        courseTitle={
+          selectedCourses.size === 1
+            ? courses.find((c) => selectedCourses.has(c.id))?.title
+            : undefined
+        }
+        loading={deleting}
+      />
     </div>
   );
 }

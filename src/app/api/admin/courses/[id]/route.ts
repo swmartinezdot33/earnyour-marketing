@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
-import { supabase } from "@/lib/db/courses";
-import { updateCourse } from "@/lib/db/courses";
+import { getSupabaseClient } from "@/lib/db/courses";
+import { updateCourse, deleteCourse } from "@/lib/db/courses";
+import { getCourseByIdCached } from "@/lib/db/courses-optimized";
 import { z } from "zod";
 
 const updateCourseSchema = z.object({
@@ -31,15 +32,9 @@ export async function GET(
     }
 
     const { id } = await params;
-    const { data, error } = await supabase
-      .from("courses")
-      .select("*")
-      .eq("id", id)
-      .single();
+    const course = await getCourseByIdCached(id);
 
-    if (error) throw error;
-
-    return NextResponse.json({ success: true, course: data });
+    return NextResponse.json({ success: true, course });
   } catch (error) {
     return NextResponse.json(
       { success: false, error: "Failed to fetch course" },
@@ -96,8 +91,31 @@ export async function PATCH(
   }
 }
 
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await getSession();
+    
+    if (!session || session.role !== "admin") {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
 
+    const { id } = await params;
+    
+    // Delete the course (this will cascade delete modules and lessons via foreign keys)
+    await deleteCourse(id);
 
-
-
-
+    return NextResponse.json({ success: true, message: "Course deleted successfully" });
+  } catch (error) {
+    console.error("Course delete error:", error);
+    return NextResponse.json(
+      { success: false, error: error instanceof Error ? error.message : "Failed to delete course" },
+      { status: 500 }
+    );
+  }
+}
