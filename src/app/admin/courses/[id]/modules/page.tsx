@@ -26,6 +26,8 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { showToast } from "@/components/ui/toast";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 function SortableModuleItem({ module, onDelete }: { module: any; onDelete: (id: string) => void }) {
   const {
@@ -71,6 +73,7 @@ export default function ModulesPage({ params }: { params: Promise<{ id: string }
   const [courseId, setCourseId] = useState<string>("");
   const [modules, setModules] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; moduleId: string | null }>({ open: false, moduleId: null });
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({ title: "", description: "" });
 
@@ -123,18 +126,28 @@ export default function ModulesPage({ params }: { params: Promise<{ id: string }
   };
 
   const handleDeleteModule = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this module?")) return;
+    setDeleteConfirm({ open: true, moduleId: id });
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteConfirm.moduleId) return;
 
     try {
-      const response = await fetch(`/api/admin/modules/${id}`, {
+      const response = await fetch(`/api/admin/modules/${deleteConfirm.moduleId}`, {
         method: "DELETE",
       });
 
       if (response.ok) {
-        setModules(modules.filter((m) => m.id !== id));
+        showToast("Module deleted successfully", "success");
+        setModules(modules.filter((m) => m.id !== deleteConfirm.moduleId));
+      } else {
+        showToast("Failed to delete module", "error");
       }
     } catch (error) {
       console.error("Error deleting module:", error);
+      showToast("Failed to delete module", "error");
+    } finally {
+      setDeleteConfirm({ open: false, moduleId: null });
     }
   };
 
@@ -244,6 +257,17 @@ export default function ModulesPage({ params }: { params: Promise<{ id: string }
             </div>
           </SortableContext>
         </DndContext>
+
+        <ConfirmDialog
+          open={deleteConfirm.open}
+          onOpenChange={(open) => setDeleteConfirm({ ...deleteConfirm, open })}
+          title="Delete Module"
+          description="Are you sure you want to delete this module? This action cannot be undone."
+          confirmText="Delete"
+          cancelText="Cancel"
+          variant="destructive"
+          onConfirm={confirmDelete}
+        />
       </Container>
     </Section>
   );

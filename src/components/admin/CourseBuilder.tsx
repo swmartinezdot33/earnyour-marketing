@@ -7,6 +7,7 @@ import { ModuleEditor } from "./ModuleEditor";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2 } from "lucide-react";
+import { showToast } from "@/components/ui/toast";
 
 interface CourseBuilderProps {
   courseId: string;
@@ -60,11 +61,11 @@ export function CourseBuilder({ courseId, initialCourse, onUpdate }: CourseBuild
         if (onUpdate) onUpdate();
       } else {
         console.error("Failed to update course:", data.error);
-        alert(data.error || "Failed to update course");
+        showToast(data.error || "Failed to update course", "error");
       }
     } catch (error) {
       console.error("Error updating course:", error);
-      alert("Failed to update course. Please try again.");
+      showToast("Failed to update course. Please try again.", "error");
     } finally {
       setLoading(false);
     }

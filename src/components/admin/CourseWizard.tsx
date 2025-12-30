@@ -10,6 +10,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, Sparkles, FileText, CheckCircle2, ArrowRight, ArrowLeft } from "lucide-react";
 import { CourseStructure } from "@/lib/ai/prompts";
+import { showToast } from "@/components/ui/toast";
 
 interface StripeProduct {
   id: string;
@@ -85,7 +86,7 @@ export function CourseWizard({ onComplete }: CourseWizardProps) {
 
   const handleAIGenerate = async () => {
     if (!topic.trim()) {
-      alert("Please enter a course topic");
+      showToast("Please enter a course topic", "warning");
       return;
     }
 
@@ -119,12 +120,12 @@ export function CourseWizard({ onComplete }: CourseWizardProps) {
         });
         setStep("review");
       } else {
-        alert(data.error || "Failed to generate course structure");
+        showToast(data.error || "Failed to generate course structure", "error");
         setStep("input");
       }
     } catch (error) {
       console.error("Error generating course:", error);
-      alert("Failed to generate course structure");
+      showToast("Failed to generate course structure", "error");
       setStep("input");
     } finally {
       setLoading(false);
@@ -133,7 +134,7 @@ export function CourseWizard({ onComplete }: CourseWizardProps) {
 
   const handleManualNext = () => {
     if (!manualFormData.title.trim()) {
-      alert("Please enter a course title");
+      showToast("Please enter a course title", "warning");
       return;
     }
 
@@ -152,7 +153,7 @@ export function CourseWizard({ onComplete }: CourseWizardProps) {
 
   const handleStripeNext = () => {
     if (productMode === "select" && !selectedProductId) {
-      alert("Please select a Stripe product");
+      showToast("Please select a Stripe product", "warning");
       return;
     }
 
@@ -217,12 +218,12 @@ export function CourseWizard({ onComplete }: CourseWizardProps) {
         onComplete(data.course);
         router.push(`/admin/courses/${data.course.id}/builder`);
       } else {
-        alert(data.error || "Failed to create course");
+        showToast(data.error || "Failed to create course", "error");
         setLoading(false);
       }
     } catch (error) {
       console.error("Error creating course:", error);
-      alert("Failed to create course");
+      showToast("Failed to create course", "error");
       setLoading(false);
     }
   };

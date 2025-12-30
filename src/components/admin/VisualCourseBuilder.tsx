@@ -7,10 +7,14 @@ import { CoursePreview } from "./CoursePreview";
 import { CourseAnalytics } from "./CourseAnalytics";
 import { StripeProductSelector } from "./StripeProductSelector";
 import { StripeWarningBanner } from "./StripeWarningBanner";
+import { CourseDiscountManager } from "./CourseDiscountManager";
+import { CoursePriceDisplay } from "./CoursePriceDisplay";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Loader2, Layout, FileText, Eye, Settings, BarChart3 } from "lucide-react";
+import { showToast } from "@/components/ui/toast";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 interface VisualCourseBuilderProps {
   courseId: string;
@@ -24,6 +28,12 @@ export function VisualCourseBuilder({ courseId, initialCourse, onUpdate }: Visua
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("builder");
   const [previewMode, setPreviewMode] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState<{
+    open: boolean;
+    title: string;
+    description: string;
+    onConfirm: () => void;
+  }>({ open: false, title: "", description: "", onConfirm: () => {} });
 
   useEffect(() => {
     if (courseId) {
@@ -65,11 +75,11 @@ export function VisualCourseBuilder({ courseId, initialCourse, onUpdate }: Visua
         if (onUpdate) onUpdate();
       } else {
         console.error("Failed to update course:", data.error);
-        alert(data.error || "Failed to update course");
+        showToast(data.error || "Failed to update course", "error");
       }
     } catch (error) {
       console.error("Error updating course:", error);
-      alert("Failed to update course. Please try again.");
+      showToast("Failed to update course. Please try again.", "error");
     } finally {
       setLoading(false);
     }
@@ -161,11 +171,16 @@ export function VisualCourseBuilder({ courseId, initialCourse, onUpdate }: Visua
                               }
                               
                               if (warningMessage) {
-                                const confirmed = confirm(
-                                  warningMessage + "\n\n" +
-                                  "Do you want to publish anyway? (Configure in Settings)"
-                                );
-                                if (!confirmed) return;
+                                setConfirmDialog({
+                                  open: true,
+                                  title: "Publish Course",
+                                  description: warningMessage + "\n\nDo you want to publish anyway? (Configure in Settings)",
+                                  onConfirm: () => {
+                                    handleCourseUpdate({ published: true });
+                                    setConfirmDialog({ open: false, title: "", description: "", onConfirm: () => {} });
+                                  },
+                                });
+                                return;
                               }
                             } catch (error) {
                               console.error("Error checking Stripe:", error);
@@ -178,10 +193,7 @@ export function VisualCourseBuilder({ courseId, initialCourse, onUpdate }: Visua
                       </Button>
                     </div>
                   </div>
-                  <div>
-                    <h3 className="font-semibold mb-2">Price</h3>
-                    <p className="text-2xl font-bold text-brand-navy">${course.price || 0}</p>
-                  </div>
+                  <CoursePriceDisplay coursePrice={course.price || 0} courseId={courseId} />
                   <div>
                     <h3 className="font-semibold mb-2">Structure</h3>
                     <div className="space-y-1 text-sm text-muted-foreground">
@@ -268,9 +280,26 @@ export function VisualCourseBuilder({ courseId, initialCourse, onUpdate }: Visua
                 if (onUpdate) onUpdate();
               }}
             />
+
+            <CourseDiscountManager
+              courseId={courseId}
+              coursePrice={course.price}
+              onDiscountUpdated={() => {
+                // Refresh course data to update price display
+                if (onUpdate) onUpdate();
+              }}
+            />
           </div>
         </TabsContent>
       </Tabs>
+
+      <ConfirmDialog
+        open={confirmDialog.open}
+        onOpenChange={(open) => setConfirmDialog({ ...confirmDialog, open })}
+        title={confirmDialog.title}
+        description={confirmDialog.description}
+        onConfirm={confirmDialog.onConfirm}
+      />
     </div>
   );
 }

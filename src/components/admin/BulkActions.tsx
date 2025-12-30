@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Trash2, Copy, Move } from "lucide-react";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 interface BulkActionsProps {
   selectedItems: string[];
@@ -21,15 +22,17 @@ export function BulkActions({
   type,
 }: BulkActionsProps) {
   const [loading, setLoading] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState(false);
 
   if (selectedItems.length === 0) {
     return null;
   }
 
   const handleDelete = async () => {
-    if (!confirm(`Are you sure you want to delete ${selectedItems.length} ${type}?`)) {
-      return;
-    }
+    setDeleteConfirm(true);
+  }
+
+  const confirmDelete = async () => {
 
     setLoading(true);
     try {
@@ -40,6 +43,7 @@ export function BulkActions({
       console.error("Error deleting items:", error);
     } finally {
       setLoading(false);
+      setDeleteConfirm(false);
     }
   };
 
@@ -93,6 +97,17 @@ export function BulkActions({
           </div>
         </div>
       </CardContent>
+
+      <ConfirmDialog
+        open={deleteConfirm}
+        onOpenChange={setDeleteConfirm}
+        title={`Delete ${type.charAt(0).toUpperCase() + type.slice(1)}`}
+        description={`Are you sure you want to delete ${selectedItems.length} ${type}? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="destructive"
+        onConfirm={confirmDelete}
+      />
     </Card>
   );
 }

@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Trash2, AlertTriangle } from "lucide-react";
+import { showToast } from "@/components/ui/toast";
 export function DeleteAccountButton() {
   const [open, setOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -36,7 +37,7 @@ export function DeleteAccountButton() {
 
   const handleDelete = async () => {
     if (emailConfirm !== userEmail) {
-      alert("Email confirmation does not match");
+      showToast("Email confirmation does not match", "error");
       return;
     }
 
@@ -56,7 +57,7 @@ export function DeleteAccountButton() {
       window.location.reload();
     } catch (error) {
       console.error("Error deleting account:", error);
-      alert(error instanceof Error ? error.message : "Failed to delete account");
+      showToast(error instanceof Error ? error.message : "Failed to delete account", "error");
       setLoading(false);
     }
   };

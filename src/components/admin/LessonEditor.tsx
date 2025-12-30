@@ -23,6 +23,8 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, Plus, Loader2, Sparkles, Video, FileText, HelpCircle, Download } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { showToast } from "@/components/ui/toast";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 const CONTENT_TYPES = [
   { value: "video", label: "Video", icon: Video },
@@ -130,19 +132,31 @@ export function LessonEditor({
     }
   };
 
-  const handleDeleteLesson = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this lesson?")) return;
+  const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; lessonId: string | null }>({ open: false, lessonId: null });
 
+  const handleDeleteLesson = async (id: string) => {
+    setDeleteConfirm({ open: true, lessonId: id });
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteConfirm.lessonId) return;
+    
     try {
-      const response = await fetch(`/api/admin/lessons/${id}`, {
+      const response = await fetch(`/api/admin/lessons/${deleteConfirm.lessonId}`, {
         method: "DELETE",
       });
 
       if (response.ok) {
+        showToast("Lesson deleted successfully", "success");
         onUpdate();
+      } else {
+        showToast("Failed to delete lesson", "error");
       }
     } catch (error) {
       console.error("Error deleting lesson:", error);
+      showToast("Failed to delete lesson", "error");
+    } finally {
+      setDeleteConfirm({ open: false, lessonId: null });
     }
   };
 
@@ -173,7 +187,7 @@ export function LessonEditor({
 
   const handleAIGenerateDescription = async () => {
     if (!formData.title.trim()) {
-      alert("Please enter a lesson title first");
+      showToast("Please enter a lesson title first", "warning");
       return;
     }
 
@@ -314,6 +328,17 @@ export function LessonEditor({
           </div>
         </SortableContext>
       </DndContext>
+
+      <ConfirmDialog
+        open={deleteConfirm.open}
+        onOpenChange={(open) => setDeleteConfirm({ ...deleteConfirm, open })}
+        title="Delete Lesson"
+        description="Are you sure you want to delete this lesson? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="destructive"
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { showToast } from "@/components/ui/toast";
 
 export function PurchaseButton({ courseId, price }: { courseId: string; price: number }) {
   const [loading, setLoading] = useState(false);
@@ -22,12 +23,12 @@ export function PurchaseButton({ courseId, price }: { courseId: string; price: n
       if (data.url) {
         window.location.href = data.url;
       } else {
-        alert(data.error || "Failed to start checkout");
+        showToast(data.error || "Failed to start checkout", "error");
         setLoading(false);
       }
     } catch (error) {
       console.error("Checkout error:", error);
-      alert("Failed to start checkout");
+      showToast("Failed to start checkout", "error");
       setLoading(false);
     }
   };

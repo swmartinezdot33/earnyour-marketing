@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Loader2 } from "lucide-react";
 import type { Enrollment } from "@/lib/db/schema";
+import { showToast } from "@/components/ui/toast";
 
 interface Course {
   id: string;
@@ -61,7 +62,7 @@ export function CourseAccessManager({
       }
     } catch (error) {
       console.error("Error updating course access:", error);
-      alert(error instanceof Error ? error.message : "Failed to update course access");
+      showToast(error instanceof Error ? error.message : "Failed to update course access", "error");
     } finally {
       setLoading(null);
     }

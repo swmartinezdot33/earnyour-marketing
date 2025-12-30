@@ -10,6 +10,7 @@ import {
   Receipt,
   FileText,
   Settings,
+  Tag,
 } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 
@@ -42,6 +43,21 @@ const navItems = [
       {
         title: "Product Reports",
         href: "/admin/reports/products",
+      },
+    ],
+  },
+  {
+    title: "Discounts & Coupons",
+    href: "/admin/discounts",
+    icon: Tag,
+    children: [
+      {
+        title: "Discounts",
+        href: "/admin/discounts",
+      },
+      {
+        title: "Coupon Codes",
+        href: "/admin/coupons",
       },
     ],
   },

@@ -193,3 +193,53 @@ export interface CourseBundle {
   stripe_price_id: string | null;
 }
 
+export interface Discount {
+  id: string;
+  name: string;
+  description: string | null;
+  discount_type: "percentage" | "fixed_amount";
+  discount_value: number;
+  applicable_to: "course" | "bundle" | "all";
+  course_id: string | null;
+  bundle_id: string | null;
+  min_purchase_amount: number | null;
+  max_discount_amount: number | null;
+  start_date: string | null;
+  end_date: string | null;
+  active: boolean;
+  usage_limit: number | null;
+  usage_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CouponCode {
+  id: string;
+  code: string;
+  description: string | null;
+  discount_type: "percentage" | "fixed_amount";
+  discount_value: number;
+  applicable_to: "course" | "bundle" | "all" | "cart";
+  course_id: string | null;
+  bundle_id: string | null;
+  min_cart_amount: number | null;
+  max_discount_amount: number | null;
+  start_date: string | null;
+  end_date: string | null;
+  active: boolean;
+  usage_limit: number | null;
+  usage_count: number;
+  user_limit: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CouponUsage {
+  id: string;
+  coupon_id: string;
+  user_id: string;
+  order_id: string;
+  discount_amount: number;
+  used_at: string;
+}
+

@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { BulkActions } from "./BulkActions";
 import { showToast } from "@/components/ui/toast";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import {
   DndContext,
   closestCenter,
@@ -294,6 +295,7 @@ export function VisualModuleEditor({
   const [aiGenerating, setAiGenerating] = useState(false);
   const [selectedModules, setSelectedModules] = useState<Set<string>>(new Set());
   const [bulkMode, setBulkMode] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; moduleId: string | null; bulk: boolean; count?: number }>({ open: false, moduleId: null, bulk: false });
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -323,23 +325,26 @@ export function VisualModuleEditor({
         setShowForm(false);
         onUpdate();
       } else {
-        alert(data.error || "Failed to create module");
+        showToast(data.error || "Failed to create module", "error");
       }
     } catch (error) {
       console.error("Error creating module:", error);
-      alert("Failed to create module. Please try again.");
+      showToast("Failed to create module. Please try again.", "error");
     } finally {
       setLoading(false);
     }
   };
 
   const handleDeleteModule = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this module? All lessons will be deleted too.")) {
-      return;
-    }
+    setDeleteConfirm({ open: true, moduleId: id, bulk: false });
+  };
+
+  const confirmDeleteModule = async () => {
+    const id = deleteConfirm.moduleId;
+    if (!id) return;
 
     try {
-      const response = await fetch(`/api/admin/modules/${id}`, {
+      const response = await fetch(`/api/admin/modules/${deleteConfirm.moduleId}`, {
         method: "DELETE",
       });
 
@@ -353,13 +358,18 @@ export function VisualModuleEditor({
     } catch (error) {
       console.error("Error deleting module:", error);
       showToast("Failed to delete module. Please try again.", "error");
+    } finally {
+      setDeleteConfirm({ open: false, moduleId: null, bulk: false });
     }
   };
 
   const handleBulkDelete = async (ids: string[]) => {
-    if (!confirm(`Are you sure you want to delete ${ids.length} modules? All lessons will be deleted too.`)) {
-      return;
-    }
+    setDeleteConfirm({ open: true, moduleId: null, bulk: true, count: ids.length });
+  };
+
+  const confirmBulkDelete = async () => {
+    const ids = Array.from(selectedModules);
+    if (ids.length === 0 || !deleteConfirm.count) return;
 
     setLoading(true);
     try {
@@ -382,6 +392,7 @@ export function VisualModuleEditor({
       showToast("Failed to delete modules. Please try again.", "error");
     } finally {
       setLoading(false);
+      setDeleteConfirm({ open: false, moduleId: null, bulk: false });
     }
   };
 
@@ -483,7 +494,7 @@ export function VisualModuleEditor({
 
   const handleAIGenerateModule = async () => {
     if (!formData.title.trim()) {
-      alert("Please enter a module title first");
+      showToast("Please enter a module title first", "warning");
       return;
     }
 
@@ -549,7 +560,7 @@ export function VisualModuleEditor({
     } catch (error) {
       console.error("Error generating module:", error);
       const errorMessage = error instanceof Error ? error.message : "Failed to generate module";
-      alert(`${errorMessage}. ${errorMessage.includes("OPENAI_API_KEY") ? "Please check your OpenAI API key configuration." : ""}`);
+      showToast(`${errorMessage}. ${errorMessage.includes("OPENAI_API_KEY") ? "Please check your OpenAI API key configuration." : ""}`, "error");
     } finally {
       setAiGenerating(false);
     }
@@ -692,6 +703,21 @@ export function VisualModuleEditor({
           </div>
         </SortableContext>
       </DndContext>
+
+      <ConfirmDialog
+        open={deleteConfirm.open}
+        onOpenChange={(open) => setDeleteConfirm({ ...deleteConfirm, open })}
+        title={deleteConfirm.bulk ? "Delete Multiple Modules" : "Delete Module"}
+        description={
+          deleteConfirm.bulk
+            ? `Are you sure you want to delete ${deleteConfirm.count || 0} module${(deleteConfirm.count || 0) !== 1 ? "s" : ""}? All lessons will be deleted too. This action cannot be undone.`
+            : "Are you sure you want to delete this module? All lessons will be deleted too. This action cannot be undone."
+        }
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="destructive"
+        onConfirm={deleteConfirm.bulk ? confirmBulkDelete : confirmDeleteModule}
+      />
     </div>
   );
 }

@@ -24,6 +24,8 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, Plus, Loader2, Sparkles, ChevronDown, ChevronRight } from "lucide-react";
 import { LessonEditor } from "./LessonEditor";
+import { showToast } from "@/components/ui/toast";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 interface ModuleEditorProps {
   courseId: string;
@@ -143,6 +145,7 @@ export function ModuleEditor({ courseId, courseTitle, modules, onUpdate }: Modul
   const [formData, setFormData] = useState({ title: "", description: "" });
   const [loading, setLoading] = useState(false);
   const [aiGenerating, setAiGenerating] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; moduleId: string | null }>({ open: false, moduleId: null });
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -173,31 +176,39 @@ export function ModuleEditor({ courseId, courseTitle, modules, onUpdate }: Modul
         setShowForm(false);
         onUpdate();
       } else {
-        alert(data.error || "Failed to create module");
+        showToast(data.error || "Failed to create module", "error");
       }
     } catch (error) {
       console.error("Error creating module:", error);
-      alert("Failed to create module. Please try again.");
+      showToast("Failed to create module. Please try again.", "error");
     } finally {
       setLoading(false);
     }
   };
 
   const handleDeleteModule = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this module? All lessons will be deleted too.")) {
-      return;
-    }
+    setDeleteConfirm({ open: true, moduleId: id });
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteConfirm.moduleId) return;
 
     try {
-      const response = await fetch(`/api/admin/modules/${id}`, {
+      const response = await fetch(`/api/admin/modules/${deleteConfirm.moduleId}`, {
         method: "DELETE",
       });
 
       if (response.ok) {
+        showToast("Module deleted successfully", "success");
         onUpdate();
+      } else {
+        showToast("Failed to delete module", "error");
       }
     } catch (error) {
       console.error("Error deleting module:", error);
+      showToast("Failed to delete module", "error");
+    } finally {
+      setDeleteConfirm({ open: false, moduleId: null });
     }
   };
 
@@ -230,7 +241,7 @@ export function ModuleEditor({ courseId, courseTitle, modules, onUpdate }: Modul
 
   const handleAIGenerateModule = async () => {
     if (!formData.title.trim()) {
-      alert("Please enter a module title first");
+      showToast("Please enter a module title first", "warning");
       return;
     }
 
@@ -303,7 +314,7 @@ export function ModuleEditor({ courseId, courseTitle, modules, onUpdate }: Modul
     } catch (error) {
       console.error("Error generating module:", error);
       const errorMessage = error instanceof Error ? error.message : "Failed to generate module";
-      alert(`${errorMessage}. ${errorMessage.includes("OPENAI_API_KEY") ? "Please check your OpenAI API key configuration." : ""}`);
+      showToast(`${errorMessage}. ${errorMessage.includes("OPENAI_API_KEY") ? "Please check your OpenAI API key configuration." : ""}`, "error");
     } finally {
       setAiGenerating(false);
     }
@@ -409,6 +420,17 @@ export function ModuleEditor({ courseId, courseTitle, modules, onUpdate }: Modul
           </div>
         </SortableContext>
       </DndContext>
+
+      <ConfirmDialog
+        open={deleteConfirm.open}
+        onOpenChange={(open) => setDeleteConfirm({ ...deleteConfirm, open })}
+        title="Delete Module"
+        description="Are you sure you want to delete this module? All lessons will be deleted too. This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="destructive"
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 }

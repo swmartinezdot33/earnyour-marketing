@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Sparkles } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 interface CourseMetadataProps {
   course: any;
@@ -24,6 +25,7 @@ export function CourseMetadata({ course, onUpdate, loading }: CourseMetadataProp
     image_url: course.image_url || "",
   });
   const [aiGenerating, setAiGenerating] = useState<string | null>(null);
+  const [publishConfirm, setPublishConfirm] = useState<{ open: boolean; warningMessage: string }>({ open: false, warningMessage: "" });
 
   // Sync formData when course prop changes
   useEffect(() => {
@@ -76,11 +78,8 @@ export function CourseMetadata({ course, onUpdate, loading }: CourseMetadataProp
         }
         
         if (warningMessage) {
-          const confirmed = confirm(
-            warningMessage + "\n\n" +
-            "Do you want to publish anyway? (You can configure Stripe and link products later in Settings)"
-          );
-          if (!confirmed) return;
+          setPublishConfirm({ open: true, warningMessage });
+          return;
         }
       } catch (error) {
         console.error("Error checking Stripe status:", error);
@@ -309,6 +308,19 @@ export function CourseMetadata({ course, onUpdate, loading }: CourseMetadataProp
           </CardContent>
         </Card>
       </div>
+
+      <ConfirmDialog
+        open={publishConfirm.open}
+        onOpenChange={(open) => setPublishConfirm({ ...publishConfirm, open })}
+        title="Publish Course"
+        description={publishConfirm.warningMessage + "\n\nDo you want to publish anyway? (You can configure Stripe and link products later in Settings)"}
+        confirmText="Publish Anyway"
+        cancelText="Cancel"
+        onConfirm={() => {
+          onUpdate({ published: !course.published });
+          setPublishConfirm({ open: false, warningMessage: "" });
+        }}
+      />
     </div>
   );
 }

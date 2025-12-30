@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { BulkActions } from "./BulkActions";
 import { showToast } from "@/components/ui/toast";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import {
   DndContext,
   closestCenter,
@@ -267,6 +268,7 @@ export function VisualLessonEditor({
   const [aiGenerating, setAiGenerating] = useState(false);
   const [selectedLessons, setSelectedLessons] = useState<Set<string>>(new Set());
   const [bulkMode, setBulkMode] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; lessonId: string | null; bulk: boolean }>({ open: false, lessonId: null, bulk: false });
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -292,21 +294,25 @@ export function VisualLessonEditor({
         setShowForm(false);
         onUpdate();
       } else {
-        alert(data.error || "Failed to create lesson");
+        showToast(data.error || "Failed to create lesson", "error");
       }
     } catch (error) {
       console.error("Error creating lesson:", error);
-      alert("Failed to create lesson. Please try again.");
+      showToast("Failed to create lesson. Please try again.", "error");
     } finally {
       setLoading(false);
     }
   };
 
   const handleDeleteLesson = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this lesson?")) return;
+    setDeleteConfirm({ open: true, lessonId: id, bulk: false });
+  };
+
+  const confirmDeleteLesson = async () => {
+    if (!deleteConfirm.lessonId) return;
 
     try {
-      const response = await fetch(`/api/admin/lessons/${id}`, {
+      const response = await fetch(`/api/admin/lessons/${deleteConfirm.lessonId}`, {
         method: "DELETE",
       });
 
@@ -319,13 +325,18 @@ export function VisualLessonEditor({
     } catch (error) {
       console.error("Error deleting lesson:", error);
       showToast("Failed to delete lesson. Please try again.", "error");
+    } finally {
+      setDeleteConfirm({ open: false, lessonId: null, bulk: false });
     }
   };
 
   const handleBulkDelete = async (ids: string[]) => {
-    if (!confirm(`Are you sure you want to delete ${ids.length} lessons?`)) {
-      return;
-    }
+    setDeleteConfirm({ open: true, lessonId: null, bulk: true });
+  };
+
+  const confirmBulkDelete = async () => {
+    const ids = Array.from(selectedLessons);
+    if (ids.length === 0) return;
 
     setLoading(true);
     try {
@@ -639,6 +650,21 @@ export function VisualLessonEditor({
           onUpdate={handleCloseEditor}
         />
       )}
+
+      <ConfirmDialog
+        open={deleteConfirm.open}
+        onOpenChange={(open) => setDeleteConfirm({ ...deleteConfirm, open })}
+        title={deleteConfirm.bulk ? "Delete Multiple Lessons" : "Delete Lesson"}
+        description={
+          deleteConfirm.bulk
+            ? `Are you sure you want to delete ${selectedLessons.size} lesson${selectedLessons.size !== 1 ? "s" : ""}? This action cannot be undone.`
+            : "Are you sure you want to delete this lesson? This action cannot be undone."
+        }
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="destructive"
+        onConfirm={deleteConfirm.bulk ? confirmBulkDelete : confirmDeleteLesson}
+      />
     </div>
   );
 }

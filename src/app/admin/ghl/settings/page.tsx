@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, TestTube, CheckCircle2, XCircle } from "lucide-react";
 import { getSession } from "@/lib/auth";
+import { showToast } from "@/components/ui/toast";
 
 export default function GHLSettingsPage() {
   const router = useRouter();
@@ -85,12 +86,12 @@ export default function GHLSettingsPage() {
 
       const data = await response.json();
       if (data.success) {
-        alert("Settings saved successfully!");
+        showToast("Settings saved successfully!", "success");
       } else {
-        alert("Error saving settings");
+        showToast("Error saving settings", "error");
       }
     } catch (error) {
-      alert("Error saving settings");
+      showToast("Error saving settings", "error");
     } finally {
       setLoading(false);
     }

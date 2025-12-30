@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { enrollUserInCourse } from "@/lib/db/enrollments";
 import { getSupabaseClient } from "@/lib/db/courses";
 import { getOrCreateUser } from "@/lib/auth";
+import { recordCouponUsage } from "@/lib/db/discounts";
 import type { CourseBundle } from "@/lib/db/schema";
 
 export async function POST(request: NextRequest) {
@@ -127,6 +128,23 @@ export async function POST(request: NextRequest) {
                 }
               }
             }
+          }
+        }
+
+        // Record coupon usage if applicable
+        const couponId = session.metadata?.coupon_id;
+        const discountAmount = session.metadata?.discount_amount;
+        if (couponId && discountAmount) {
+          try {
+            await recordCouponUsage(
+              couponId,
+              user.id,
+              session.id,
+              parseFloat(discountAmount)
+            );
+          } catch (error) {
+            console.error("Error recording coupon usage:", error);
+            // Don't fail the entire webhook if coupon recording fails
           }
         }
 

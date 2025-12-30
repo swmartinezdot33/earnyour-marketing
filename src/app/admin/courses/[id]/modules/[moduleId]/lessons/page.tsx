@@ -26,6 +26,8 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { showToast } from "@/components/ui/toast";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 const CONTENT_TYPES = [
   { value: "video", label: "Video", icon: Video },
@@ -83,6 +85,7 @@ export default function LessonsPage({ params }: { params: Promise<{ id: string; 
   const [moduleId, setModuleId] = useState<string>("");
   const [courseId, setCourseId] = useState<string>("");
   const [lessons, setLessons] = useState<any[]>([]);
+  const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; lessonId: string | null }>({ open: false, lessonId: null });
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
@@ -141,18 +144,28 @@ export default function LessonsPage({ params }: { params: Promise<{ id: string; 
   };
 
   const handleDeleteLesson = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this lesson?")) return;
+    setDeleteConfirm({ open: true, lessonId: id });
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteConfirm.lessonId) return;
 
     try {
-      const response = await fetch(`/api/admin/lessons/${id}`, {
+      const response = await fetch(`/api/admin/lessons/${deleteConfirm.lessonId}`, {
         method: "DELETE",
       });
 
       if (response.ok) {
-        setLessons(lessons.filter((l) => l.id !== id));
+        showToast("Lesson deleted successfully", "success");
+        setLessons(lessons.filter((l) => l.id !== deleteConfirm.lessonId));
+      } else {
+        showToast("Failed to delete lesson", "error");
       }
     } catch (error) {
       console.error("Error deleting lesson:", error);
+      showToast("Failed to delete lesson", "error");
+    } finally {
+      setDeleteConfirm({ open: false, lessonId: null });
     }
   };
 
@@ -277,6 +290,17 @@ export default function LessonsPage({ params }: { params: Promise<{ id: string; 
             </div>
           </SortableContext>
         </DndContext>
+
+        <ConfirmDialog
+          open={deleteConfirm.open}
+          onOpenChange={(open) => setDeleteConfirm({ ...deleteConfirm, open })}
+          title="Delete Lesson"
+          description="Are you sure you want to delete this lesson? This action cannot be undone."
+          confirmText="Delete"
+          cancelText="Cancel"
+          variant="destructive"
+          onConfirm={confirmDelete}
+        />
       </Container>
     </Section>
   );

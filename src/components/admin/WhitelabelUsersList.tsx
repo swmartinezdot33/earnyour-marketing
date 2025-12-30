@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Trash2 } from "lucide-react";
+import { showToast } from "@/components/ui/toast";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 interface WhitelabelUsersListProps {
   users: Array<{
@@ -33,17 +35,20 @@ export function WhitelabelUsersList({
   whitelabelId,
 }: WhitelabelUsersListProps) {
   const [removing, setRemoving] = useState<string | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; userId: string | null }>({ open: false, userId: null });
 
   async function handleRemove(userId: string) {
-    if (!confirm("Are you sure you want to remove this user from the whitelabel account?")) {
-      return;
-    }
+    setDeleteConfirm({ open: true, userId });
+  }
 
-    setRemoving(userId);
+  async function confirmRemove() {
+    if (!deleteConfirm.userId) return;
+
+    setRemoving(deleteConfirm.userId);
 
     try {
       const response = await fetch(
-        `/api/admin/whitelabel/${whitelabelId}/users/${userId}`,
+        `/api/admin/whitelabel/${whitelabelId}/users/${deleteConfirm.userId}`,
         {
           method: "DELETE",
         }
@@ -53,11 +58,13 @@ export function WhitelabelUsersList({
         throw new Error("Failed to remove user");
       }
 
+      showToast("User removed successfully", "success");
       window.location.reload();
     } catch (err) {
-      alert(err instanceof Error ? err.message : "An error occurred");
-    } finally {
+      showToast(err instanceof Error ? err.message : "An error occurred", "error");
       setRemoving(null);
+    } finally {
+      setDeleteConfirm({ open: false, userId: null });
     }
   }
 
@@ -70,39 +77,52 @@ export function WhitelabelUsersList({
   }
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Name</TableHead>
-          <TableHead>Email</TableHead>
-          <TableHead>Assigned</TableHead>
-          <TableHead className="text-right">Actions</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {users.map((assignment) => (
-          <TableRow key={assignment.id}>
-            <TableCell>
-              {assignment.user.name || "N/A"}
-            </TableCell>
-            <TableCell>{assignment.user.email}</TableCell>
-            <TableCell>
-              {new Date(assignment.assigned_at).toLocaleDateString()}
-            </TableCell>
-            <TableCell className="text-right">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleRemove(assignment.user_id)}
-                disabled={removing === assignment.user_id}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </TableCell>
+    <>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead>Assigned</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody>
+          {users.map((assignment) => (
+            <TableRow key={assignment.id}>
+              <TableCell>
+                {assignment.user.name || "N/A"}
+              </TableCell>
+              <TableCell>{assignment.user.email}</TableCell>
+              <TableCell>
+                {new Date(assignment.assigned_at).toLocaleDateString()}
+              </TableCell>
+              <TableCell className="text-right">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleRemove(assignment.user_id)}
+                  disabled={removing === assignment.user_id}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+
+      <ConfirmDialog
+        open={deleteConfirm.open}
+        onOpenChange={(open) => setDeleteConfirm({ ...deleteConfirm, open })}
+        title="Remove User"
+        description="Are you sure you want to remove this user from the whitelabel account?"
+        confirmText="Remove"
+        cancelText="Cancel"
+        variant="destructive"
+        onConfirm={confirmRemove}
+      />
+    </>
   );
 }
 
