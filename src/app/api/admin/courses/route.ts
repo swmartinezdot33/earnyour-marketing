@@ -39,6 +39,9 @@ export async function POST(request: NextRequest) {
       image_url: validated.image_url || null,
       stripe_product_id: validated.stripe_product_id || null,
       stripe_price_id: validated.stripe_price_id || null,
+      category: null,
+      featured: false,
+      preview_lesson_id: null,
     });
 
     if (validated.stripe_product_id) {

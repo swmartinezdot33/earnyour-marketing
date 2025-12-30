@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { enrollUserInCourse } from "@/lib/db/enrollments";
 import { getSupabaseClient } from "@/lib/db/courses";
 import { getOrCreateUser } from "@/lib/auth";
+import type { CourseBundle } from "@/lib/db/schema";
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
@@ -100,11 +101,13 @@ export async function POST(request: NextRequest) {
 
           // Handle bundle enrollments (enroll in all courses in each bundle)
           for (const bundleId of bundleIds) {
-            const { data: bundle } = await supabaseClient
+            const { data: bundleData } = await supabaseClient
               .from("course_bundles")
               .select("course_ids")
               .eq("id", bundleId)
               .single();
+
+            const bundle = bundleData as Pick<CourseBundle, "course_ids"> | null;
 
             if (bundle && bundle.course_ids) {
               for (const courseId of bundle.course_ids) {
@@ -139,7 +142,7 @@ export async function POST(request: NextRequest) {
             }
           }
 
-          await supabaseClient.from("stripe_purchases").insert(purchases);
+          await (supabaseClient.from("stripe_purchases") as any).insert(purchases);
         }
 
       } catch (error) {

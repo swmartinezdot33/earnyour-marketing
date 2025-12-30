@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getStripeClient } from "@/lib/stripe/config";
 import { getSupabaseClient } from "@/lib/db/courses";
-import type { CourseBundle } from "@/lib/db/schema";
+import type { Course, CourseBundle } from "@/lib/db/schema";
 
 interface CheckoutItem {
   type: "course" | "bundle";
@@ -30,11 +30,13 @@ export async function POST(request: NextRequest) {
 
     for (const item of items as CheckoutItem[]) {
       if (item.type === "course") {
-        const { data: course } = await supabase
+        const { data: courseData } = await supabase
           .from("courses")
           .select("*")
           .eq("id", item.id)
           .single();
+
+        const course = courseData as Course | null;
 
         if (!course || !course.stripe_price_id) {
           return NextResponse.json(
@@ -49,11 +51,13 @@ export async function POST(request: NextRequest) {
         });
         courseIds.push(item.id);
       } else if (item.type === "bundle") {
-        const { data: bundle } = await supabase
+        const { data: bundleData } = await supabase
           .from("course_bundles")
           .select("*")
           .eq("id", item.id)
           .single();
+
+        const bundle = bundleData as CourseBundle | null;
 
         if (!bundle || !bundle.stripe_price_id) {
           return NextResponse.json(

@@ -10,6 +10,7 @@ import Link from "next/link";
 import { Play, ShoppingCart, CheckCircle2 } from "lucide-react";
 import { CourseHero } from "@/components/store/CourseHero";
 import { CourseCurriculum } from "@/components/store/CourseCurriculum";
+import type { Module } from "@/lib/db/schema";
 
 export const dynamic = 'force-dynamic';
 
@@ -50,7 +51,7 @@ export default async function StoreCoursePage({
     notFound();
   }
 
-  let modules = [];
+  let modules: Module[] = [];
   try {
     modules = await getModulesByCourseId(course.id);
   } catch (error) {

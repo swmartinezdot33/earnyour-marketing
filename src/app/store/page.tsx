@@ -6,6 +6,8 @@ import { CourseGrid } from "@/components/store/CourseGrid";
 import { Container } from "@/components/layout/Container";
 import { Section } from "@/components/layout/Section";
 import { CourseBundleCard } from "@/components/store/CourseBundleCard";
+import type { Course } from "@/lib/db/schema";
+import type { CourseBundle } from "@/lib/db/schema";
 
 export const metadata: Metadata = {
   title: "Course Store | EarnYour Marketing",
@@ -16,10 +18,10 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function StorePage() {
-  let allCourses = [];
-  let featuredCourses = [];
-  let allBundles = [];
-  let featuredBundles = [];
+  let allCourses: Course[] = [];
+  let featuredCourses: Course[] = [];
+  let allBundles: CourseBundle[] = [];
+  let featuredBundles: CourseBundle[] = [];
 
   try {
     [allCourses, featuredCourses, allBundles, featuredBundles] = await Promise.all([
