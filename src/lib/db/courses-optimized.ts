@@ -91,11 +91,15 @@ export const getCourseWithModulesAndLessons = cache(async (slug: string) => {
     lessonsByModule.get(lesson.module_id)!.push(lesson);
   });
   
-  // Attach lessons to modules
-  const modulesWithLessons = modules.map(module => ({
-    ...module,
-    lessons: lessonsByModule.get(module.id) || [],
-  }));
+  // Attach lessons to modules with lesson_count
+  const modulesWithLessons = modules.map(module => {
+    const moduleLessons = lessonsByModule.get(module.id) || [];
+    return {
+      ...module,
+      lessons: moduleLessons,
+      lesson_count: moduleLessons.length,
+    };
+  });
   
   return {
     course,
@@ -143,11 +147,15 @@ export const getModulesWithLessons = cache(async (courseId: string) => {
     lessonsByModule.get(lesson.module_id)!.push(lesson);
   });
   
-  // Attach lessons to modules
-  return modules.map(module => ({
-    ...module,
-    lessons: lessonsByModule.get(module.id) || [],
-  }));
+  // Attach lessons to modules with lesson_count
+  return modules.map(module => {
+    const moduleLessons = lessonsByModule.get(module.id) || [];
+    return {
+      ...module,
+      lessons: moduleLessons,
+      lesson_count: moduleLessons.length,
+    };
+  });
 });
 
 // Optimized: Get course by ID with cache

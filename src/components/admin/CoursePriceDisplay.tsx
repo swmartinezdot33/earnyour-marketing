@@ -7,9 +7,10 @@ import type { Discount } from "@/lib/db/schema";
 interface CoursePriceDisplayProps {
   coursePrice: number;
   courseId: string;
+  compact?: boolean;
 }
 
-export function CoursePriceDisplay({ coursePrice, courseId }: CoursePriceDisplayProps) {
+export function CoursePriceDisplay({ coursePrice, courseId, compact = false }: CoursePriceDisplayProps) {
   const [discounts, setDiscounts] = useState<Discount[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -20,7 +21,10 @@ export function CoursePriceDisplay({ coursePrice, courseId }: CoursePriceDisplay
   async function fetchDiscounts() {
     try {
       const response = await fetch(`/api/admin/discounts?course_id=${courseId}`);
-      if (!response.ok) return;
+      if (!response.ok) {
+        console.error("Failed to fetch discounts:", response.status, response.statusText);
+        return;
+      }
       const { discounts: data } = await response.json();
       setDiscounts(data || []);
     } catch (error) {
@@ -60,10 +64,44 @@ export function CoursePriceDisplay({ coursePrice, courseId }: CoursePriceDisplay
   const finalPrice = coursePrice - discountAmount;
 
   if (loading) {
+    if (compact) {
+      return (
+        <div>
+          <span className="text-sm font-medium">Price: </span>
+          <span className="text-sm text-muted-foreground">${coursePrice.toFixed(2)}</span>
+        </div>
+      );
+    }
     return (
       <div>
         <h3 className="font-semibold mb-2">Price</h3>
         <p className="text-2xl font-bold text-brand-navy">${coursePrice.toFixed(2)}</p>
+      </div>
+    );
+  }
+
+  if (compact) {
+    return (
+      <div>
+        {bestDiscount ? (
+          <div className="space-y-1">
+            <div>
+              <span className="text-sm font-medium">Price: </span>
+              <span className="text-sm text-muted-foreground line-through">${coursePrice.toFixed(2)}</span>
+              <span className="text-sm font-semibold text-brand-navy ml-2">${finalPrice.toFixed(2)}</span>
+            </div>
+            <p className="text-xs text-green-600 font-medium">
+              {bestDiscount.discount_type === "percentage"
+                ? `${bestDiscount.discount_value}% off`
+                : `$${bestDiscount.discount_value.toFixed(2)} off`}
+            </p>
+          </div>
+        ) : (
+          <div>
+            <span className="text-sm font-medium">Price: </span>
+            <span className="text-sm text-muted-foreground">${coursePrice.toFixed(2)}</span>
+          </div>
+        )}
       </div>
     );
   }

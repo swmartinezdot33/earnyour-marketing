@@ -92,7 +92,7 @@ export function DiscountDialog({
         usage_limit: "",
       });
     }
-  }, [discount, open]);
+  }, [discount, open, defaultCourseId]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

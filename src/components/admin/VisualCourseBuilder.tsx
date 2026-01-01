@@ -239,6 +239,7 @@ export function VisualCourseBuilder({ courseId, initialCourse, onUpdate }: Visua
             course={course}
             onUpdate={handleCourseUpdate}
             loading={loading}
+            courseId={courseId}
           />
         </TabsContent>
 

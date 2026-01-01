@@ -242,7 +242,7 @@ function SortableModuleItem({
           {!previewMode && (
             <div className="flex items-center gap-2">
               <span className="text-xs text-muted-foreground">
-                {lessons.length} {lessons.length === 1 ? "lesson" : "lessons"}
+                {module.lesson_count || lessons.length} {(module.lesson_count || lessons.length) === 1 ? "lesson" : "lessons"}
               </span>
               <Button
                 variant="ghost"

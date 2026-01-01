@@ -51,7 +51,7 @@ export function CoursePreview({ courseId, course, modules }: CoursePreviewProps)
     }
   };
 
-  const totalLessons = modules.reduce((acc, m) => acc + (moduleLessons[m.id]?.length || 0), 0);
+  const totalLessons = modules.reduce((acc, m) => acc + (m.lesson_count || moduleLessons[m.id]?.length || 0), 0);
 
   return (
     <div className="space-y-6">
@@ -132,7 +132,7 @@ export function CoursePreview({ courseId, course, modules }: CoursePreviewProps)
                     </div>
                     <div className="flex items-center gap-4">
                       <span className="text-sm text-muted-foreground">
-                        {moduleLessons[module.id]?.length || 0} lessons
+                        {module.lesson_count || moduleLessons[module.id]?.length || 0} lessons
                       </span>
                       <Button variant="ghost" size="sm">
                         {expandedModules.has(module.id) ? "Hide" : "Show"} Lessons

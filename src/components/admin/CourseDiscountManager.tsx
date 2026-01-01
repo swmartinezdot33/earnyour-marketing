@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Edit, Trash2, Tag } from "lucide-react";
 import { DiscountDialog } from "./DiscountDialog";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { showToast } from "@/components/ui/toast";
 import { format } from "date-fns";
 import type { Discount } from "@/lib/db/schema";
@@ -25,6 +26,7 @@ export function CourseDiscountManager({
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingDiscount, setEditingDiscount] = useState<Discount | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; discountId: string | null }>({ open: false, discountId: null });
 
   useEffect(() => {
     fetchCourseDiscounts();
@@ -54,11 +56,15 @@ export function CourseDiscountManager({
     setDialogOpen(true);
   }
 
-  async function handleDelete(discountId: string) {
-    if (!confirm("Are you sure you want to delete this discount?")) return;
+  function handleDelete(discountId: string) {
+    setDeleteConfirm({ open: true, discountId });
+  }
+
+  async function confirmDelete() {
+    if (!deleteConfirm.discountId) return;
 
     try {
-      const response = await fetch(`/api/admin/discounts/${discountId}`, {
+      const response = await fetch(`/api/admin/discounts/${deleteConfirm.discountId}`, {
         method: "DELETE",
       });
 
@@ -70,6 +76,8 @@ export function CourseDiscountManager({
     } catch (error) {
       console.error("Error deleting discount:", error);
       showToast("Failed to delete discount", "error");
+    } finally {
+      setDeleteConfirm({ open: false, discountId: null });
     }
   }
 
@@ -258,6 +266,7 @@ export function CourseDiscountManager({
                           variant="outline"
                           size="sm"
                           onClick={() => handleDelete(discount.id)}
+                          className="text-destructive hover:text-destructive"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -277,6 +286,17 @@ export function CourseDiscountManager({
         discount={editingDiscount}
         onSave={handleSave}
         defaultCourseId={courseId}
+      />
+
+      <ConfirmDialog
+        open={deleteConfirm.open}
+        onOpenChange={(open) => setDeleteConfirm({ ...deleteConfirm, open })}
+        title="Delete Discount"
+        description="Are you sure you want to delete this discount? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="destructive"
+        onConfirm={confirmDelete}
       />
     </>
   );

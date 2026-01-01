@@ -8,14 +8,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Sparkles } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { CoursePriceDisplay } from "./CoursePriceDisplay";
+import { CourseDiscountManager } from "./CourseDiscountManager";
 
 interface CourseMetadataProps {
   course: any;
   onUpdate: (updates: any) => void;
   loading?: boolean;
+  courseId?: string;
 }
 
-export function CourseMetadata({ course, onUpdate, loading }: CourseMetadataProps) {
+export function CourseMetadata({ course, onUpdate, loading, courseId }: CourseMetadataProps) {
   const [formData, setFormData] = useState({
     title: course.title || "",
     slug: course.slug || "",
@@ -26,6 +29,7 @@ export function CourseMetadata({ course, onUpdate, loading }: CourseMetadataProp
   });
   const [aiGenerating, setAiGenerating] = useState<string | null>(null);
   const [publishConfirm, setPublishConfirm] = useState<{ open: boolean; warningMessage: string }>({ open: false, warningMessage: "" });
+  const [priceDisplayKey, setPriceDisplayKey] = useState(0);
 
   // Sync formData when course prop changes
   useEffect(() => {
@@ -291,10 +295,14 @@ export function CourseMetadata({ course, onUpdate, loading }: CourseMetadataProp
             </div>
             <div className="pt-2 border-t">
               <div className="space-y-2">
-                <div>
-                  <span className="text-sm font-medium">Price: </span>
-                  <span className="text-sm text-muted-foreground">${course.price}</span>
-                </div>
+                {courseId ? (
+                  <CoursePriceDisplay key={priceDisplayKey} coursePrice={course.price || 0} courseId={courseId} compact />
+                ) : (
+                  <div>
+                    <span className="text-sm font-medium">Price: </span>
+                    <span className="text-sm text-muted-foreground">${course.price}</span>
+                  </div>
+                )}
                 {course.stripe_product_id && (
                   <div>
                     <span className="text-sm font-medium">Stripe Product: </span>
@@ -307,6 +315,18 @@ export function CourseMetadata({ course, onUpdate, loading }: CourseMetadataProp
             </div>
           </CardContent>
         </Card>
+
+        {/* Discount Management */}
+        {courseId && (
+          <CourseDiscountManager
+            courseId={courseId}
+            coursePrice={course.price || 0}
+            onDiscountUpdated={() => {
+              // Force refresh of price display
+              setPriceDisplayKey((prev) => prev + 1);
+            }}
+          />
+        )}
       </div>
 
       <ConfirmDialog
