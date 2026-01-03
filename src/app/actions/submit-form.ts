@@ -16,6 +16,7 @@ const formSchema = z.object({
   city: z.string().min(1, "City is required"),
   monthlySpend: z.string().optional(),
   goal: z.string().min(1, "Primary goal is required"),
+  smsConsent: z.string().optional(), // "on" when checked, undefined when not checked
 });
 
 type FormState = {
@@ -35,6 +36,7 @@ export async function submitAuditForm(prevState: FormState, formData: FormData):
     city: formData.get("city"),
     monthlySpend: formData.get("monthlySpend"),
     goal: formData.get("goal"),
+    smsConsent: formData.get("smsConsent"),
   };
 
   const validatedFields = formSchema.safeParse(rawData);
@@ -48,6 +50,11 @@ export async function submitAuditForm(prevState: FormState, formData: FormData):
   }
 
   const data = validatedFields.data;
+  const smsConsentGiven = data.smsConsent === "on";
+  const consentTimestamp = smsConsentGiven ? new Date().toISOString() : null;
+
+  // Remove raw smsConsent from data (it's just "on" or undefined), we'll store boolean and timestamp
+  const { smsConsent: _, ...formDataToStore } = data;
 
   try {
     // 1. Send Email (Resend)
@@ -63,11 +70,12 @@ export async function submitAuditForm(prevState: FormState, formData: FormData):
           <p><strong>Business:</strong> ${data.businessName}</p>
           <p><strong>Email:</strong> ${data.email}</p>
           <p><strong>Phone:</strong> ${data.phone}</p>
-          <p><strong>Website:</strong> ${data.website}</p>
+          <p><strong>Website:</strong> ${data.website || "N/A"}</p>
           <p><strong>Industry:</strong> ${data.industry}</p>
           <p><strong>City:</strong> ${data.city}</p>
-          <p><strong>Spend:</strong> ${data.monthlySpend}</p>
+          <p><strong>Spend:</strong> ${data.monthlySpend || "Not specified"}</p>
           <p><strong>Goal:</strong> ${data.goal}</p>
+          <p><strong>SMS Consent:</strong> ${smsConsentGiven ? "Yes (at " + consentTimestamp + ")" : "No"}</p>
         `,
       });
     }
@@ -85,7 +93,12 @@ export async function submitAuditForm(prevState: FormState, formData: FormData):
           console.error("Error reading submissions.json", e);
         }
       }
-      submissions.push({ ...data, createdAt: new Date().toISOString() });
+      submissions.push({ 
+        ...formDataToStore, 
+        createdAt: new Date().toISOString(),
+        smsConsent: smsConsentGiven,
+        smsConsentTimestamp: consentTimestamp,
+      });
       fs.writeFileSync(dbPath, JSON.stringify(submissions, null, 2));
     } else {
       // Supabase (Production)
@@ -97,7 +110,12 @@ export async function submitAuditForm(prevState: FormState, formData: FormData):
         
         // Ensure table 'leads' exists in Supabase
         const { error } = await supabase.from("leads").insert([
-          { ...data, created_at: new Date().toISOString() }
+          { 
+            ...formDataToStore, 
+            created_at: new Date().toISOString(),
+            sms_consent: smsConsentGiven,
+            sms_consent_timestamp: consentTimestamp,
+          }
         ]);
 
         if (error) {
@@ -113,6 +131,8 @@ export async function submitAuditForm(prevState: FormState, formData: FormData):
     return { success: false, message: "Something went wrong. Please try again." };
   }
 }
+
+
 
 
 

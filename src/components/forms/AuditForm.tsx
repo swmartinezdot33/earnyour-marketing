@@ -4,7 +4,10 @@ import { useActionState } from "react";
 import { submitAuditForm } from "@/app/actions/submit-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import { CheckCircle2, Loader2 } from "lucide-react";
+import Link from "next/link";
 
 export function AuditForm() {
   const [state, action, isPending] = useActionState(submitAuditForm, {
@@ -108,6 +111,41 @@ export function AuditForm() {
         <div className="text-red-500 text-sm font-medium">{state.message}</div>
       )}
 
+      {/* A2P-Compliant SMS Consent Checkbox */}
+      <div className="space-y-3 p-4 bg-muted/50 rounded-lg border border-border">
+        <div className="flex items-start gap-3">
+          <Checkbox 
+            id="smsConsent" 
+            name="smsConsent" 
+            value="on"
+            className="mt-0.5"
+            aria-describedby="smsConsentDescription"
+          />
+          <div className="space-y-1.5 flex-1">
+            <Label 
+              htmlFor="smsConsent" 
+              className="text-sm font-medium leading-tight cursor-pointer"
+            >
+              I consent to receive SMS/text messages from EarnYour Marketing at the phone number provided.
+            </Label>
+            <div id="smsConsentDescription" className="text-xs text-muted-foreground space-y-1">
+              <p>
+                Message frequency varies. Message and data rates may apply. Reply STOP to unsubscribe at any time. 
+                Reply HELP for help. By checking this box, you agree to receive automated marketing text messages 
+                from EarnYour Marketing.
+              </p>
+              <p>
+                View our <Link href="/privacy" className="underline hover:text-primary">Privacy Policy</Link> for 
+                more information about how we handle your data.
+              </p>
+            </div>
+          </div>
+        </div>
+        {state.errors?.smsConsent && (
+          <p className="text-sm text-red-500 ml-7">{state.errors.smsConsent[0]}</p>
+        )}
+      </div>
+
       <Button type="submit" disabled={isPending} className="w-full h-12 text-lg font-bold" size="lg">
         {isPending ? (
           <>
@@ -120,7 +158,8 @@ export function AuditForm() {
       </Button>
 
       <p className="text-xs text-center text-muted-foreground">
-        By submitting this form, you agree to our Privacy Policy.
+        By submitting this form, you agree to our{" "}
+        <Link href="/privacy" className="underline hover:text-primary">Privacy Policy</Link>.
       </p>
     </form>
   );
