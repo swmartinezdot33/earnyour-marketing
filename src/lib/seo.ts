@@ -36,7 +36,7 @@ export function constructMetadata({
       creator: "@earnyour",
     },
     icons,
-    metadataBase: new URL("https://earnyour.com"),
+    metadataBase: new URL("https://www.earnyour.com"),
     ...(noIndex && {
       robots: {
         index: false,
@@ -51,7 +51,7 @@ export function constructLocalBusinessSchema() {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "name": "EarnYour Marketing",
-    "image": "https://earnyour.com/og-image.jpg",
+    "image": "https://www.earnyour.com/og-image.jpg",
     "email": "hello@earnyour.com",
     "telephone": "+16625550123",
     "address": {
@@ -61,7 +61,7 @@ export function constructLocalBusinessSchema() {
       "postalCode": "38801",
       "addressCountry": "US"
     },
-    "url": "https://earnyour.com",
+    "url": "https://www.earnyour.com",
     "priceRange": "$$$",
     "openingHoursSpecification": [
       {
@@ -143,7 +143,7 @@ export function constructServiceAreaSchema(city: { name: string; state: string; 
         "addressCountry": "US"
       }
     },
-    "url": `https://earnyour.com/locations/${city.slug}`,
+    "url": `https://www.earnyour.com/locations/${city.slug}`,
     "hasOfferCatalog": {
       "@type": "OfferCatalog",
       "name": "Digital Marketing Services",

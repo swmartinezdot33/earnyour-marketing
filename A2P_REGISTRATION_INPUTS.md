@@ -31,7 +31,7 @@ Hi [Name]! This is EarnYour Marketing. Thanks for requesting your free marketing
 *(Required: 20-1024 characters)*
 
 ```
-Hey [Name], this is EarnYour Marketing. Your free audit report is ready! We found 12 opportunities to improve your local SEO and Google Ads performance. Schedule your free strategy call: https://earnyour.com/free-audit. Reply STOP to unsubscribe.
+Hey [Name], this is EarnYour Marketing. Your free audit report is ready! We found 12 opportunities to improve your local SEO and Google Ads performance. Schedule your free strategy call: https://www.earnyour.com/free-audit. Reply STOP to unsubscribe.
 ```
 
 **Character Count:** ~203 characters ✓
@@ -75,4 +75,5 @@ Hey [Name], this is EarnYour Marketing. Your free audit report is ready! We foun
 - Messages are professional and representative of actual communications you'd send
 - The campaign type "Low Volume Mixed" is appropriate for a marketing agency
 - All character limits are met with comfortable margins
+
 

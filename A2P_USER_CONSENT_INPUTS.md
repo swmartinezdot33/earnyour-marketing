@@ -4,7 +4,7 @@
 *(Required: 0-2048 characters)*
 
 ```
-End users opt-in by visiting https://earnyour.com/free-audit or https://earnyour.com/contact and filling out our contact form with their business information including name, email, phone number, business name, industry, and marketing goals. Users must explicitly check a separate, unchecked checkbox that states "I consent to receive SMS/text messages from EarnYour Marketing at the phone number provided" with full disclosure text explaining message frequency, data rates, and opt-out instructions (Reply STOP to unsubscribe). The opt-in checkbox is not bundled with other agreements and requires active user consent. Users also agree to our Terms of Service and Privacy Policy which contain detailed SMS messaging disclosures and compliance information. Consent is captured with timestamp when the form is submitted.
+End users opt-in by visiting https://www.earnyour.com/free-audit or https://www.earnyour.com/contact and filling out our contact form with their business information including name, email, phone number, business name, industry, and marketing goals. Users must explicitly check a separate, unchecked checkbox that states "I consent to receive SMS/text messages from EarnYour Marketing at the phone number provided" with full disclosure text explaining message frequency, data rates, and opt-out instructions (Reply STOP to unsubscribe). The opt-in checkbox is not bundled with other agreements and requires active user consent. Users also agree to our Terms of Service and Privacy Policy which contain detailed SMS messaging disclosures and compliance information. Consent is captured with timestamp when the form is submitted.
 ```
 
 **Character Count:** ~684 characters ✓
@@ -31,13 +31,13 @@ You have successfully opted-in to receive marketing and transactional SMS messag
 *(Required - must be publicly accessible)*
 
 ```
-https://earnyour.com/free-audit
+https://www.earnyour.com/free-audit
 ```
 
 **Alternative URLs if needed:**
-- `https://earnyour.com/contact`
-- `https://earnyour.com/privacy` (Privacy Policy with SMS section)
-- `https://earnyour.com/terms` (Terms of Service with SMS section)
+- `https://www.earnyour.com/contact`
+- `https://www.earnyour.com/privacy` (Privacy Policy with SMS section)
+- `https://www.earnyour.com/terms` (Terms of Service with SMS section)
 
 **Note:** The form at `/free-audit` and `/contact` both contain the A2P-compliant SMS consent checkbox. The `/privacy` and `/terms` pages contain the full SMS messaging disclosures.
 
@@ -48,14 +48,14 @@ https://earnyour.com/free-audit
 Check ALL of the following boxes (all should be checked):
 
 ✅ **My opt-in method is clearly shown (form, QR code, paper, etc.).**
-- The SMS consent checkbox is clearly visible on our contact forms at https://earnyour.com/free-audit and https://earnyour.com/contact
+- The SMS consent checkbox is clearly visible on our contact forms at https://www.earnyour.com/free-audit and https://www.earnyour.com/contact
 
 ✅ **My website is live and accessible (no errors or broken links).**
-- Website is live and fully functional at https://earnyour.com
+- Website is live and fully functional at https://www.earnyour.com
 
 ✅ **My business website URL and opt-in form link are provided.**
-- Business website: https://earnyour.com
-- Opt-in form: https://earnyour.com/free-audit
+- Business website: https://www.earnyour.com
+- Opt-in form: https://www.earnyour.com/free-audit
 
 ✅ **My opt-in flow is compliant and includes required disclosures.**
 - Separate, unchecked checkbox for SMS consent
@@ -91,8 +91,9 @@ Check ALL of the following boxes (all should be checked):
 - **Opt-in Description:** Clear explanation of the checkbox opt-in process on website forms
 - **Opt-in Message:** Concise confirmation message with required disclosures
 - **Method:** Website Form
-- **Form URL:** https://earnyour.com/free-audit (primary) or https://earnyour.com/contact
+- **Form URL:** https://www.earnyour.com/free-audit (primary) or https://www.earnyour.com/contact
 - **Compliance:** All 8 checklist items can be verified and checked
 
 All inputs are A2P-compliant and accurately reflect your actual website implementation.
+
 

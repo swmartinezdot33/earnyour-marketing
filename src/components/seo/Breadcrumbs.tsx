@@ -22,7 +22,7 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
       "@type": "ListItem",
       "position": index + 1,
       "name": item.label,
-      "item": `https://earnyour.com${item.href}`
+      "item": `https://www.earnyour.com${item.href}`
     }))
   };
 
@@ -60,6 +60,9 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
     </div>
   );
 }
+
+
+
 
 
 

@@ -6,17 +6,22 @@ export async function middleware(request: NextRequest) {
   const url = request.nextUrl.clone();
 
   // Force HTTPS redirect (301 permanent)
-  // Redirects: http://earnyour.com/* -> https://earnyour.com/*
+  // Redirects: http://earnyour.com/* -> https://www.earnyour.com/*
+  // Redirects: http://www.earnyour.com/* -> https://www.earnyour.com/*
   if (protocol === 'http:') {
     url.protocol = 'https:';
+    // Ensure www is present
+    if (!hostname.startsWith('www.')) {
+      url.hostname = `www.${hostname}`;
+    }
     return NextResponse.redirect(url, { status: 301 });
   }
 
-  // Force non-www redirect (301 permanent)
-  // Canonical domain is https://earnyour.com (non-www)
-  // Redirects: https://www.earnyour.com/* -> https://earnyour.com/*
-  if (hostname.startsWith('www.')) {
-    url.hostname = hostname.replace('www.', '');
+  // Force www redirect (301 permanent)
+  // Canonical domain is https://www.earnyour.com (with www)
+  // Redirects: https://earnyour.com/* -> https://www.earnyour.com/*
+  if (!hostname.startsWith('www.')) {
+    url.hostname = `www.${hostname}`;
     return NextResponse.redirect(url, { status: 301 });
   }
 

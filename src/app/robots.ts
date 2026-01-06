@@ -7,9 +7,12 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/api/"],
     },
-    sitemap: "https://earnyour.com/sitemap.xml",
+    sitemap: "https://www.earnyour.com/sitemap.xml",
   };
 }
+
+
+
 
 
 

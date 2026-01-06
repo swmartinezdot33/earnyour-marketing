@@ -12,7 +12,7 @@ import { constructMetadata } from "@/lib/seo";
 export const metadata: Metadata = constructMetadata({
   title: "EarnYour Marketing | Performance First Local Growth Partner",
   description: "Performance first local growth partner. SEO, Ads, CRM, Automations, and Custom Software for local businesses in North Mississippi.",
-  canonical: "https://earnyour.com",
+  canonical: "https://www.earnyour.com",
 });
 
 export default function Home() {
