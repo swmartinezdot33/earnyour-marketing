@@ -2,7 +2,24 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 
 export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const { pathname, hostname, protocol } = request.nextUrl;
+  const url = request.nextUrl.clone();
+
+  // Force HTTPS redirect (301 permanent)
+  // Redirects: http://earnyour.com/* -> https://earnyour.com/*
+  if (protocol === 'http:') {
+    url.protocol = 'https:';
+    return NextResponse.redirect(url, { status: 301 });
+  }
+
+  // Force non-www redirect (301 permanent)
+  // Canonical domain is https://earnyour.com (non-www)
+  // Redirects: https://www.earnyour.com/* -> https://earnyour.com/*
+  if (hostname.startsWith('www.')) {
+    url.hostname = hostname.replace('www.', '');
+    return NextResponse.redirect(url, { status: 301 });
+  }
+
   const session = await getSession();
 
   // Public routes
@@ -45,6 +62,9 @@ export const config = {
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
+
+
+
 
 
 
