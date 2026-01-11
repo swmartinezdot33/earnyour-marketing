@@ -31,7 +31,7 @@ export function CourseLandingTemplate({
       .slice(0, 5);
   };
 
-  const benefits = extractBenefits(course.description);
+  const benefits = extractBenefits(course.description || undefined);
 
   return (
     <>
