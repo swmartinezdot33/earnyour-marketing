@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/layout/Container";
 import { Section } from "@/components/layout/Section";
@@ -72,6 +72,48 @@ export function Hero() {
           </motion.div>
         </div>
       </Container>
+      
+      {/* Scroll Indicator - positioned to avoid overlap with call button on mobile */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.5 }}
+        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10 hidden md:block"
+      >
+        <motion.div
+          animate={{ y: [0, 8, 0] }}
+          transition={{
+            duration: 1.5,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="flex flex-col items-center gap-2 text-muted-foreground"
+        >
+          <span className="text-xs font-medium">Scroll</span>
+          <ChevronDown className="h-5 w-5" />
+        </motion.div>
+      </motion.div>
+      
+      {/* Mobile scroll indicator - positioned higher to avoid call button */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.5 }}
+        className="absolute bottom-20 left-1/2 transform -translate-x-1/2 z-10 md:hidden"
+      >
+        <motion.div
+          animate={{ y: [0, 8, 0] }}
+          transition={{
+            duration: 1.5,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="flex flex-col items-center gap-2 text-muted-foreground"
+        >
+          <span className="text-xs font-medium">Scroll</span>
+          <ChevronDown className="h-5 w-5" />
+        </motion.div>
+      </motion.div>
     </Section>
   );
 }
