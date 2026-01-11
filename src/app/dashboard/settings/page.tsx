@@ -51,35 +51,25 @@ export default async function SettingsPage() {
                 Your account details and membership information
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">Email</label>
-                <p className="text-lg">{user?.email}</p>
-              </div>
-              
-              {user?.name && (
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground">Name</label>
-                  <p className="text-lg">{user.name}</p>
+                  <label className="text-sm font-medium text-muted-foreground">Member Since</label>
+                  <p className="text-lg">
+                    {user?.created_at
+                      ? new Date(user.created_at).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })
+                      : "N/A"}
+                  </p>
                 </div>
-              )}
 
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">Member Since</label>
-                <p className="text-lg">
-                  {user?.created_at
-                    ? new Date(user.created_at).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })
-                    : "N/A"}
-                </p>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">Account Status</label>
-                <p className="text-lg capitalize">{user?.status || "active"}</p>
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Account Status</label>
+                  <p className="text-lg capitalize">{user?.status || "active"}</p>
+                </div>
               </div>
 
               <AccountSettingsForm user={user} />
@@ -138,6 +128,9 @@ export default async function SettingsPage() {
     </Section>
   );
 }
+
+
+
 
 
 

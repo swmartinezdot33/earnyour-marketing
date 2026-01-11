@@ -16,3 +16,6 @@ CREATE INDEX IF NOT EXISTS idx_users_deleted_at ON users(deleted_at);
 -- Update existing users to have 'active' status
 UPDATE users SET status = 'active' WHERE status IS NULL;
 
+
+
+

@@ -93,3 +93,6 @@ OPENAI_API_KEY=... (for AI course builder)
 
 That's it! You're ready to build courses! 🚀
 
+
+
+

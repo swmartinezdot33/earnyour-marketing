@@ -73,7 +73,7 @@ export default async function CoursesPage() {
                       <span className="text-2xl font-bold text-brand-navy">
                         ${course.price}
                       </span>
-                      <Link href={`/courses/${course.slug}`}>
+                      <Link href={enrolled ? `/courses/${course.slug}/learn` : `/courses/${course.slug}/landing`}>
                         <Button>
                           {enrolled ? "Continue" : "View Course"}
                         </Button>

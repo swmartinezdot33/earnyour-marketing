@@ -88,8 +88,8 @@ export async function getOrCreateUser(email: string, name?: string) {
       ghl_location_id: null,
       whitelabel_id: null,
     });
-  } else if (isAdminEmail && user.role !== "admin") {
-    // If user exists but should be admin, update their role
+  } else if (isAdminEmail && user.role?.toLowerCase() !== "admin") {
+    // If user exists but should be admin, update their role (normalize to lowercase)
     const { updateUser } = await import("@/lib/db/users");
     user = await updateUser(user.id, { role: "admin" });
   }

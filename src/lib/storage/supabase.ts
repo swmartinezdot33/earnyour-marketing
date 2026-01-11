@@ -75,3 +75,6 @@ export async function getFileUrl(path: string, bucket: string = "course-media"):
   return data.publicUrl;
 }
 
+
+
+

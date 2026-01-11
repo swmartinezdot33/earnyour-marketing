@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { getUserById } from "@/lib/db/users";
 import { AdminNav } from "@/components/layout/AdminNav";
 import { Container } from "@/components/layout/Container";
 import { deleteSession } from "@/lib/auth";
@@ -38,7 +39,15 @@ export default async function AdminLayout({
 }) {
   const session = await getSession();
 
-  if (!session || session.role !== "admin") {
+  if (!session) {
+    redirect("/login");
+  }
+
+  // Check database role (not just session) to handle stale sessions
+  const user = await getUserById(session.userId);
+  const userRole = user?.role?.toLowerCase();
+
+  if (userRole !== "admin") {
     redirect("/dashboard");
   }
 

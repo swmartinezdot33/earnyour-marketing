@@ -115,3 +115,6 @@ export function CourseFilters({ onFiltersChange, className }: CourseFiltersProps
   );
 }
 
+
+
+

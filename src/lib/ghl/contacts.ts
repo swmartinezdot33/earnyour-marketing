@@ -54,3 +54,6 @@ export async function handleGHLContactResponse(
   await storeGHLContactId(userId, contactId, ghlResponse.locationId);
 }
 
+
+
+

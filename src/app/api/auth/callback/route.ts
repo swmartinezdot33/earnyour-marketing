@@ -88,7 +88,9 @@ export async function GET(request: NextRequest) {
       dbUser = existingUser || { role: "student" };
     }
 
-    const role = (dbUser?.role as "admin" | "student") || "student";
+    // Normalize role to lowercase for consistency
+    const dbRole = dbUser?.role?.toLowerCase() || "student";
+    const role = (dbRole === "admin" ? "admin" : "student") as "admin" | "student";
 
     // Create session in our system
     await createSession(user.id, user.email, role);

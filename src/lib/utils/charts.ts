@@ -74,3 +74,6 @@ export function calculatePercentageChange(current: number, previous: number): nu
   return ((current - previous) / previous) * 100;
 }
 
+
+
+

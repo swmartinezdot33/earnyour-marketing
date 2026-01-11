@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { getUserById } from "@/lib/db/users";
 import { getUserEnrollments } from "@/lib/db/enrollments";
 import { getUserTransactions } from "@/lib/db/transactions";
 import { Container } from "@/components/layout/Container";
@@ -20,6 +21,15 @@ export default async function DashboardPage() {
   
   if (!session) {
     redirect("/login");
+  }
+
+  // Check database role (not just session) to handle stale sessions
+  const user = await getUserById(session.userId);
+  const userRole = user?.role?.toLowerCase();
+  
+  // Redirect admins to admin portal
+  if (userRole === "admin") {
+    redirect("/admin/dashboard");
   }
 
   const [enrollments, transactions] = await Promise.all([
