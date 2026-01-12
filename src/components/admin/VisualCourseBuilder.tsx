@@ -192,7 +192,7 @@ export function VisualCourseBuilder({ courseId, initialCourse, onUpdate }: Visua
                       <div className="flex justify-between">
                         <span>Total Lessons:</span>
                         <span className="font-medium">
-                          {modules.reduce((acc, m) => acc + (m.lesson_count || 0), 0)}
+                          {modules.reduce((acc, m) => acc + (m.lessons?.length || 0), 0)}
                         </span>
                       </div>
                     </div>
