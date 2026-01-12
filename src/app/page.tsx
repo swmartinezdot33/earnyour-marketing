@@ -7,7 +7,7 @@ import { Testimonials } from "@/components/home/Testimonials";
 import { FAQ } from "@/components/home/FAQ";
 import { CTA } from "@/components/home/CTA";
 import { AuthCallbackHandler } from "@/components/auth/AuthCallbackHandler";
-import { constructMetadata } from "@/lib/seo";
+import { constructMetadata, constructLocalBusinessSchema } from "@/lib/seo";
 
 export const metadata: Metadata = constructMetadata({
   title: "EarnYour Marketing | Performance First Local Growth Partner",
@@ -16,8 +16,16 @@ export const metadata: Metadata = constructMetadata({
 });
 
 export default function Home() {
+  const localBusinessSchema = constructLocalBusinessSchema();
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(localBusinessSchema),
+        }}
+      />
       <AuthCallbackHandler />
       <Hero />
       <Services />

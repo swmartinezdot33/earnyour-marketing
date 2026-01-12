@@ -46,11 +46,10 @@ async function getAdminUserId() {
     .from("users")
     .select("id")
     .eq("email", "steven@earnyour.com")
-    .eq("role", "admin")
     .single();
   
   if (error || !data) {
-    throw new Error("Admin user not found. Please ensure steven@earnyour.com exists as admin.");
+    throw new Error("User not found. Please ensure steven@earnyour.com exists.");
   }
   
   return data.id;
