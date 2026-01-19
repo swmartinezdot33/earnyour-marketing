@@ -57,7 +57,44 @@ export async function submitAuditForm(prevState: FormState, formData: FormData):
   const { smsConsent: _, ...formDataToStore } = data;
 
   try {
-    // 1. Send Email (Resend)
+    // 1. Send to LeadConnector Webhook
+    const webhookUrl = "https://services.leadconnectorhq.com/hooks/GQOh2EMzgc3bRAfN7Q9j/webhook-trigger/q4hPueFxoEAr0rWXtcsA";
+    try {
+      const webhookPayload = {
+        name: data.name,
+        businessName: data.businessName,
+        email: data.email,
+        phone: data.phone,
+        website: data.website || "",
+        industry: data.industry,
+        city: data.city,
+        monthlySpend: data.monthlySpend || "",
+        goal: data.goal,
+        smsConsent: smsConsentGiven,
+        smsConsentTimestamp: consentTimestamp,
+        source: "Website Form",
+        submittedAt: new Date().toISOString(),
+      };
+
+      const webhookResponse = await fetch(webhookUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(webhookPayload),
+      });
+
+      if (!webhookResponse.ok) {
+        const errorText = await webhookResponse.text();
+        console.error("Webhook error:", webhookResponse.status, errorText);
+        // Don't fail the form submission if webhook fails, but log it
+      }
+    } catch (webhookError) {
+      console.error("Webhook request failed:", webhookError);
+      // Don't fail the form submission if webhook fails, but log it
+    }
+
+    // 2. Send Email (Resend)
     if (process.env.RESEND_API_KEY) {
       const resend = new Resend(process.env.RESEND_API_KEY);
       await resend.emails.send({
@@ -80,7 +117,7 @@ export async function submitAuditForm(prevState: FormState, formData: FormData):
       });
     }
 
-    // 2. Save Data
+    // 3. Save Data
     if (process.env.NODE_ENV === "development") {
       // Local JSON
       const dbPath = path.join(process.cwd(), "data", "submissions.json");
